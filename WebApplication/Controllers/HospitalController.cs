@@ -175,6 +175,33 @@ namespace WebApplication.Controllers
             }
         }
 
+        public IActionResult EditPrescription(String id)
+        {
+            string sql = "SELECT * FROM Prescription WHERE Prescription_id={0}";
+            string select = String.Format(sql, id);
+            DataTable dt = DBUtl.GetTable(select);
+            if (dt.Rows.Count == 1)
+            {
+                Prescription prep = new Prescription
+                {
+                    Patient_id = (int)dt.Rows[0]["Patient_id"],
+                    Prescription_id = (int)dt.Rows[0]["Prescription_id"],
+                    Doctor_mcr = dt.Rows[0]["Doctor_mcr"].ToString(),
+                    Doctor_name = dt.Rows[0]["Doctor_name"].ToString(),
+                    Practicing_place_name = dt.Rows[0]["Practicing_place_name"].ToString(),
+                    Practicing_address = dt.Rows[0]["Practicing_address"].ToString()
+                };
+
+                return View(prep);
+            }
+            else
+            {
+                TempData["Message"] = "Prescription Not Found";
+                TempData["MsgType"] = "warning";
+                return RedirectToAction("Prescriptions");
+            }
+        }
+
         [HttpPost]
         public IActionResult AddLog(Patient patient, Medicine medicine, Dosage dosage, Log log)
         {

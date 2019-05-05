@@ -1,0 +1,96 @@
+﻿@model Prescription
+
+@{
+
+}
+
+
+    <form asp-controller="Hospital"
+          asp-action="EditPrescription"
+          method="post">
+
+        <div class="form-group row">
+            <div class="offset-sm-0 col-sm-6 ">
+                <h2>Edit Prescription</h2>
+            </div>
+        </div>
+
+        <div class="form-group row row">
+            <label class="control-label col-sm-3" asp-for="Prescription_id">Prescription ID : </label>
+            <div class="col-sm-4">
+                <input asp-for="Prescription_id" class="form-control" value="@Model.Prescription_id" readonly />
+
+            </div>
+            <div class="col-sm-4">
+                <span asp-validation-for="Prescription_id" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="form-group row row">
+            <label class="control-label col-sm-3" asp-for="Patient_id">Patient ID : </label>
+            <div class="col-sm-4">
+                <input asp-for="Patient_id" class="form-control" value="@Model.Patient_id" readonly />
+
+            </div>
+            <div class="col-sm-4">
+                <span asp-validation-for="Patient_id" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="form-group row row">
+            <label class="control-label col-sm-3" asp-for="Doctor_mcr">Doctor MCR : </label>
+            <div class="col-sm-4">
+                <input asp-for="Doctor_mcr" class="form-control" />
+            </div>
+            <div class="col-sm-4">
+                <span asp-validation-for="Doctor_mcr" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="form-group row row">
+            <label class="control-label col-sm-3" asp-for="Doctor_name">Doctor Name : </label>
+            <div class="col-sm-4">
+                <input asp-for="Doctor_name" class="form-control" />
+            </div>
+            <div class="col-sm-4">
+                <span asp-validation-for="Doctor_name" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label class="control-label col-sm-3" asp-for="Practicing_place_name">Practicing Place : </label>
+            <div class="col-sm-5">
+                <input class="form-control" asp-for="Practicing_place_name" />
+            </div>
+            <div class="col-sm-4">
+                <span asp-validation-for="Practicing_place_name" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="form-group row row">
+            <label class="control-label col-sm-3" asp-for="Practicing_address">Practicing Address : </label>
+            <div class="col-sm-5">
+                <input class="form-control" asp-for="Practicing_address" />
+            </div>
+            <div class="col-sm-3">
+                <span asp-validation-for="Practicing_address" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="offset-sm-3 col-sm-6">
+                <input type="submit" value="Submit" class="btn btn-primary" />
+            </div>
+        </div>
+
+        @if (ViewData["Message"] != null)
+        {
+            <div class="form-group row">
+                <div class="offset-sm-3 col-sm-6">
+                    <div class="alert alert-@ViewData["MsgType"]">
+                        <text>@Html.Raw(ViewData["Message"])</text>
+                    </div>
+                </div>
+            </div>
+        }
+
+    </form>
