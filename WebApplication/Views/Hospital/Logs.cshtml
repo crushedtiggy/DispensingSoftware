@@ -1,0 +1,38 @@
+﻿@model List<Log>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Logs</h2>
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-@TempData["MsgType"]">
+        @TempData["Message"]
+    </div>
+}
+
+<span style="color:red">@TempData["Msg"]</span>
+<table class="table table-bordered table-condensed table-hover table-striped">
+    <thead>
+        <tr>
+            <th scope="col" width="20%">Log ID</th>
+            <th scope="col" width="20%">Patient ID</th>
+            <th scope="col" width="20%">Medicine ID</th>
+            <th scope="col" width="20%">Dosage ID</th>
+            <th scope="col" width="20%">Booking Appointment</th>
+        </tr>
+    </thead>
+    @foreach (Log b in Model)
+    {
+        <tbody>
+            <tr scope="row">
+                <td width="20%">@b.Log_id</td>
+                <td width="20%">@b.Patient_id</td>
+                <td width="20%">@b.Medicine_id</td>
+                <td width="20%">@b.Dosage_id</td>
+                <td width="20%">@b.Booking_apppointment</td>
+            </tr>
+        </tbody>
+    }
+</table>

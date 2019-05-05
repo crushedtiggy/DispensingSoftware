@@ -1,0 +1,43 @@
+﻿@model List<Patient>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Patients</h2>
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-@TempData["MsgType"]">
+        @TempData["Message"]
+    </div>
+}
+
+<span style="color:red">@TempData["Msg"]</span>
+<table class="table table-bordered table-condensed table-hover table-striped">
+    <thead>
+        <tr>
+            <th scope="col" width="20%">Patient ID</th>
+            <th scope="col" width="20%">Name</th>
+            <th scope="col" width="20%">NRIC</th>
+            <th scope="col" width="20%">Gender</th>
+            <th scope="col" width="20%">Urgent Status</th>
+        </tr>
+        </thead>
+        @foreach (Patient b in Model)
+        {
+<tbody>
+    <tr scope="row">
+        <td width="20%">@b.Patient_id</td>
+        <td width="20%">@b.Name</td>
+        <td width="20%">@b.Nric</td>
+        <td width="20%">@b.Gender</td>
+        <td width="20%">
+            @if (b.Is_Urgent.Equals("true"))
+            {
+            <center><img src="~/images/police.png" height="25" width="25" /></center>
+            }
+        </td>
+    </tr>
+</tbody>
+        }
+</table>

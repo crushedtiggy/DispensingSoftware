@@ -1,0 +1,44 @@
+﻿@model List<Prescription>
+
+@{
+    ViewBag.Title = "Index";
+    var patients = ViewData["patients"] as List<Patient>;
+}
+
+<h2>Prescriptions</h2>
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-@TempData["MsgType"]">
+        @TempData["Message"]
+    </div>
+}
+
+<span style="color:red">@TempData["Msg"]</span>
+<table class="table table-bordered table-condensed table-hover table-striped">
+    <thead>
+        <tr>
+            <th scope="col" width="20%">Prescription ID</th>
+            <th scope="col" width="20%">Patient ID</th>
+            <th scope="col" width="20%">Name</th>
+        </tr>
+    </thead>
+    
+        @foreach (Prescription i in Model)
+        {
+    <tbody>
+    <tr scope="row">
+        <td width="20%">@i.Prescription_id</td>
+        <td width="20%">@i.Patient_id</td>
+        <td width="20%">
+            @foreach (Patient x in patients)
+            {
+                if (x.Patient_id.Equals(i.Patient_id))
+                {
+                    <text>@x.Name</text>
+                }
+            }
+        </td>
+    </tr>
+</tbody>
+        }
+</table>
