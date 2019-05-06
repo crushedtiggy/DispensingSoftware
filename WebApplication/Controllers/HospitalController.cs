@@ -213,6 +213,37 @@ namespace WebApplication.Controllers
             }
         }
 
+        public IActionResult EditLog(String id)
+        {
+            string sql = "SELECT * FROM Log WHERE Log_id={0}";
+            string select = String.Format(sql, id);
+            DataTable dt = DBUtl.GetTable(select);
+            if (dt.Rows.Count == 1)
+            {
+                Log log = new Log
+                {
+                    Log_id = (int)dt.Rows[0]["Log_id"],
+                    Patient_id = (int)dt.Rows[0]["Patient_id"],
+                    Medicine_id = (int)dt.Rows[0]["Medicine_id"],
+                    Dosage_id = (int)dt.Rows[0]["Dosage_id"],
+                    Booking_appointment = dt.Rows[0]["Booking_appointment"].ToString(),
+                    Case_notes = dt.Rows[0]["Case_notes"],
+                    Duration = (int)dt.Rows[0]["Duration"],
+                    Dosage_quantity = (int)dt.Rows[0]["Dosage_quantity"],
+                    Instructions = dt.Rows[0]["Instructions"].ToString(),
+                    Total_price = (double)dt.Rows[0]["Total_price"]
+                };
+
+                return View(log);
+            }
+            else
+            {
+                TempData["Message"] = "Log Not Found";
+                TempData["MsgType"] = "warning";
+                return RedirectToAction("Logs");
+            }
+        }
+
         [HttpPost]
         public IActionResult AddLog(Patient patient, Medicine medicine, Dosage dosage, Log log)
         {
@@ -234,7 +265,7 @@ namespace WebApplication.Controllers
                        @"INSERT INTO log (Log_id, Patient_id, Medicine_id, Dosage_id, Booking_appointment, Case_notes, Duration, Dosage_quantity, Instructions, Total_price)
                                     VALUES('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', '{6}', '{7}', '{8}', '{9}')";
 
-                if (DBUtl.ExecSQL(sql, logs.Count + 1, patient.Patient_id, medicine.Medicine_id, dosage.Dosage_id, $"{log.Booking_apppointment:yyyy-MM-dd HH:mm}", log.Case_notes, log.Duration, log.Dosage_quantity, log.Instructions, totalPrice) == 1 && DBUtl.ExecSQL(update, log.Dosage_quantity, log.Medicine_id) == 1)
+                if (DBUtl.ExecSQL(sql, logs.Count + 1, patient.Patient_id, medicine.Medicine_id, dosage.Dosage_id, $"{log.Booking_appointment:yyyy-MM-dd HH:mm}", log.Case_notes, log.Duration, log.Dosage_quantity, log.Instructions, totalPrice) == 1 && DBUtl.ExecSQL(update, log.Dosage_quantity, log.Medicine_id) == 1)
                 {
                     TempData["Message"] = "Log Added";
                     TempData["MsgType"] = "success";

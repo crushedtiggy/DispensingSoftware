@@ -21,6 +21,7 @@
             <th scope="col" width="20%">Medicine ID</th>
             <th scope="col" width="20%">Dosage ID</th>
             <th scope="col" width="20%">Booking Appointment</th>
+            <th scope="col" width="20%">Actions</th>
         </tr>
     </thead>
     @foreach (Log b in Model)
@@ -31,7 +32,10 @@
                 <td width="20%">@b.Patient_id</td>
                 <td width="20%">@b.Medicine_id</td>
                 <td width="20%">@b.Dosage_id</td>
-                <td width="20%">@b.Booking_apppointment</td>
+                <td width="20%">@b.Booking_appointment</td>
+                <td width="20%">
+                    <a href="/Hospital/EditLog/@b.Log_id">Edit</a>
+                </td>
             </tr>
         </tbody>
     }
