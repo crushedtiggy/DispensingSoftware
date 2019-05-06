@@ -112,8 +112,17 @@ namespace WebApplication.Controllers
             else
             {
                 int queueNo = CheckQueueNumber(GetQueueCategoryId(newPatient));
+                int patientId;
                 List<Patient> patients = DBUtl.GetList<Patient>(
                                     "SELECT * FROM patient ORDER BY patient_id");
+                if (patients.Count == 0)
+                {
+                    patientId = 1;
+                }
+                else
+                {
+                    patientId = patients.LastOrDefault().Patient_id + 1;
+                }
 
                 string sql =
 //                       @"INSERT INTO testcheck (test_id, Name, Nric, Gender, Date_of_birth, Race, Height, Weight, Allergy, Smoke, Alcohol, Has_travel, Has_flu, Has_following_symptoms, Address, Postal_code, Phone_no, Email, Remarks, Registered_datetime, Is_Urgent)
@@ -121,7 +130,7 @@ namespace WebApplication.Controllers
 //LOCK TABLES patient WRITE, testcheck WRITE;
 
 @"INSERT INTO patient (Patient_id, Queue_id, Name, Nric, Gender, Date_of_birth, Race, Height, Weight, Allergy, Smoke, Alcohol, Has_travel, Has_flu, Has_following_symptoms, Address, Postal_code, Phone_no, Email, Remarks, Registered_datetime, Is_Urgent)
-                                    VALUES('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', '{6}', '{7}', '{8}', '{9}', '{10}', '{11}', '{12}', '{13}', '{14}', '{15}', '{16}', '{17}', '{18}', GETDATE(), '{19}', '{20}'";
+                                    VALUES('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', '{6}', '{7}', '{8}', '{9}', '{10}', '{11}', '{12}', '{13}', '{14}', '{15}', '{16}', '{17}', '{18}', '{19}', GETDATE(), '{20}')";
 //DELETE from testcheck WHERE testcheck.Name = patient.Name;
 //UNLOCK TABLES;";
                 string queueSQL = @"INSERT INTO queue (Queue_id, Patient_id, Serve_status_id, Queue_category_id, Queue_datetime) VALUES ('{0}', '{1}', '{2}', '{3}', GETDATE())";
@@ -129,9 +138,9 @@ namespace WebApplication.Controllers
 
 
                 if (DBUtl.ExecSQL(sql,
-                                        patients.Count + 1, queueNo, newPatient.Name, newPatient.Nric,
+                                        patientId, queueNo, newPatient.Name, newPatient.Nric,
                                         newPatient.Gender, $"{newPatient.Date_of_birth:yyyy-MM-dd}", newPatient.Race,
-                                        newPatient.Height, newPatient.Weight, newPatient.Allergy, newPatient.Smoke, newPatient.Alcohol, newPatient.Has_travel, newPatient.Has_flu, newPatient.Has_following_symptoms, newPatient.Address, newPatient.Postal_code, newPatient.Phone_no, newPatient.Email, newPatient.Remarks, newPatient.Is_Urgent) == 1 && DBUtl.ExecSQL(queueSQL, queueNo, queueNo, 1, GetQueueCategoryId(newPatient)) == 1 && DBUtl.ExecSQL(categorySQL, GetQueueCategoryId(newPatient), queueNo, "admin") == 1)
+                                        newPatient.Height, newPatient.Weight, newPatient.Allergy, newPatient.Smoke, newPatient.Alcohol, newPatient.Has_travel, newPatient.Has_flu, newPatient.Has_following_symptoms, newPatient.Address, newPatient.Postal_code, newPatient.Phone_no, newPatient.Email, newPatient.Remarks, newPatient.Is_Urgent) == 1 && DBUtl.ExecSQL(queueSQL, queueNo, patientId, 1, GetQueueCategoryId(newPatient)) == 1 && DBUtl.ExecSQL(categorySQL, GetQueueCategoryId(newPatient), queueNo, "admin") == 1)
                 {
                     TempData["Message"] = "Patient Added";
                     TempData["MsgType"] = "success";
