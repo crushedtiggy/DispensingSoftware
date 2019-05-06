@@ -20,25 +20,28 @@
             <th scope="col" width="20%">Prescription ID</th>
             <th scope="col" width="20%">Patient ID</th>
             <th scope="col" width="20%">Name</th>
+            <th scope="col" width="20%">Actions</th>
         </tr>
     </thead>
     
         @foreach (Prescription i in Model)
         {
     <tbody>
-    <tr scope="row">
-        <td width="20%">@i.Prescription_id</td>
-        <td width="20%">@i.Patient_id</td>
-        <td width="20%">
-            @foreach (Patient x in patients)
-            {
-                if (x.Patient_id.Equals(i.Patient_id))
+        <tr scope="row">
+            <td width="20%">@i.Prescription_id</td>
+            <td width="20%">@i.Patient_id</td>
+            <td width="20%">
+                @foreach (Patient x in patients)
                 {
-                    <text>@x.Name</text>
+                    if (x.Patient_id.Equals(i.Patient_id))
+                    {
+                        <text>@x.Name</text>
+                    }
                 }
-            }
-        </td>
-    </tr>
+            </td>
+            <td width="20%"><a href="/Hospital/EditPrescription/@i.Prescription_id">Edit</a>
+            </td>
+        </tr>
 </tbody>
         }
 </table>
