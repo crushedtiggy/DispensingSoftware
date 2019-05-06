@@ -20,7 +20,9 @@
             <th scope="col" width="20%">Queue ID</th>
             <th scope="col" width="20%">Name</th>
             <th scope="col" width="20%">NRIC</th>
+            <th scope="col" width="20%">DOB</th>
             <th scope="col" width="20%">Gender</th>
+            <th scope="col" width="20%">Registered Date and Time</th>
             <th scope="col" width="20%">Urgent Status</th>
         </tr>
         </thead>
@@ -32,7 +34,9 @@
         <td width="20%">@b.Queue_id</td>
         <td width="20%">@b.Name</td>
         <td width="20%">@b.Nric</td>
+        <td width="20%">@String.Format("{0:dd MMM yyyy}", b.Date_of_birth)</td>
         <td width="20%">@b.Gender</td>
+        <td width="20%">@String.Format("{0:dd MMM yyyy HH:mm}", b.Registered_datetime)</td>
         <td width="20%">
             @if (b.Is_Urgent.Equals("true"))
             {

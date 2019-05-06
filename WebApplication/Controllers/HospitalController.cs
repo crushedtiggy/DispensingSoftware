@@ -136,10 +136,12 @@ namespace WebApplication.Controllers
                 string queueSQL = @"INSERT INTO queue (Queue_id, Patient_id, Serve_status_id, Queue_category_id, Queue_datetime) VALUES ('{0}', '{1}', '{2}', '{3}', GETDATE())";
                 string categorySQL = @"INSERT INTO category{0} (Queue_no, Created_by) VALUES ('{1}', '{2}')";
 
+                DateTime date = newPatient.Date_of_birth.Date;
+
 
                 if (DBUtl.ExecSQL(sql,
                                         patientId, queueNo, newPatient.Name, newPatient.Nric,
-                                        newPatient.Gender, $"{newPatient.Date_of_birth:yyyy-MM-dd}", newPatient.Race,
+                                        newPatient.Gender, $"{date:yyyy-MM-dd}", newPatient.Race,
                                         newPatient.Height, newPatient.Weight, newPatient.Allergy, newPatient.Smoke, newPatient.Alcohol, newPatient.Has_travel, newPatient.Has_flu, newPatient.Has_following_symptoms, newPatient.Address, newPatient.Postal_code, newPatient.Phone_no, newPatient.Email, newPatient.Remarks, newPatient.Is_Urgent) == 1 && DBUtl.ExecSQL(queueSQL, queueNo, patientId, 1, GetQueueCategoryId(newPatient)) == 1 && DBUtl.ExecSQL(categorySQL, GetQueueCategoryId(newPatient), queueNo, "admin") == 1)
                 {
                     TempData["Message"] = "Patient Added";
@@ -157,6 +159,9 @@ namespace WebApplication.Controllers
         [HttpPost]
         public IActionResult AddPrescription(Prescription prescription, Patient patient)
         {
+            List<Prescription> preps = DBUtl.GetList<Prescription>(
+                                    "SELECT * FROM prescription ORDER BY Prescription_id");
+
             if (!ModelState.IsValid)
             {
                 ViewData["Message"] = "Invalid Input";
@@ -165,14 +170,13 @@ namespace WebApplication.Controllers
             }
             else
             {
-                List<Prescription> preps = DBUtl.GetList<Prescription>(
-                                     "SELECT * FROM prescription ORDER BY Prescription_id");
+               
 
                 string sql =
                        @"INSERT INTO prescription (Prescription_id, Patient_id, Doctor_mcr, Doctor_name, Practicing_place_name, Practicing_address)
                                     VALUES('{0}', '{1}', '{2}', '{3}', '{4}', '{5}')";
 
-                if (DBUtl.ExecSQL(sql, preps.Count + 1, patient.Patient_id, prescription.Doctor_mcr, prescription.Doctor_name, prescription.Practicing_place_name, prescription.Practicing_address) == 1)
+                if (DBUtl.ExecSQL(sql, preps.LastOrDefault().Prescription_id + 1, patient.Patient_id, prescription.Doctor_mcr, prescription.Doctor_name, prescription.Practicing_place_name, prescription.Practicing_address) == 1)
                 {
                     TempData["Message"] = "Prescription Added";
                     TempData["MsgType"] = "success";
@@ -220,21 +224,21 @@ namespace WebApplication.Controllers
             DataTable dt = DBUtl.GetTable(select);
             if (dt.Rows.Count == 1)
             {
-                Log log = new Log
+                Log logRecord = new Log
                 {
                     Log_id = (int)dt.Rows[0]["Log_id"],
                     Patient_id = (int)dt.Rows[0]["Patient_id"],
                     Medicine_id = (int)dt.Rows[0]["Medicine_id"],
                     Dosage_id = (int)dt.Rows[0]["Dosage_id"],
-                    Booking_appointment = dt.Rows[0]["Booking_appointment"].ToString(),
-                    Case_notes = dt.Rows[0]["Case_notes"],
+                    Booking_appointment = (DateTime) dt.Rows[0]["Booking_appointment"],
+                    Case_notes = dt.Rows[0]["Case_notes"].ToString(),
                     Duration = (int)dt.Rows[0]["Duration"],
                     Dosage_quantity = (int)dt.Rows[0]["Dosage_quantity"],
                     Instructions = dt.Rows[0]["Instructions"].ToString(),
                     Total_price = (double)dt.Rows[0]["Total_price"]
                 };
 
-                return View(log);
+                return View(logRecord);
             }
             else
             {
@@ -288,7 +292,7 @@ namespace WebApplication.Controllers
         public int GetQueueCategoryId(Patient patient)
         {
             int queueid = 0;
-            int age = DateTime.Today.Year - DateTime.Parse(patient.Date_of_birth).Year;
+            int age = DateTime.Today.Year - patient.Date_of_birth.Year;
 
             if (patient.Is_Urgent.Equals("true"))
             {

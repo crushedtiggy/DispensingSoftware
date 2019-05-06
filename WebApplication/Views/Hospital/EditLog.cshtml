@@ -1,7 +1,6 @@
 ﻿@model Log
 
 @{
-
 }
 <!-- include jquery -->
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js"></script>
@@ -15,12 +14,11 @@
 <link rel="stylesheet" href="../dist/summernote-bs4.css">
 <script type="text/javascript" src="../dist/summernote-bs4.js"></script>
 
-
 <script type="text/javascript">
     $(function () {
         $('.summernote').summernote({
             height: 200,
-            width: 500
+            width: 500,
         });
     });
 </script>
@@ -100,7 +98,7 @@
     <div class="form-group row row">
         <label class="control-label col-sm-3" asp-for="Case_notes">Case Notes : </label>
         <div class="col-sm-4">
-            <textarea rows="8" cols="50" asp-for="Case_notes" class="summernote">
+            <textarea rows="8" cols="50" asp-for="Case_notes" class="summernote" value="@Model.Case_notes">
 </textarea>
         </div>
         <div class="col-sm-4">

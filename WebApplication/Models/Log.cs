@@ -11,7 +11,7 @@ namespace WebApplication.Models
         public int Patient_id { get; set; }
         public int Medicine_id { get; set; }
         public int Dosage_id { get; set; }
-        public string Booking_appointment { get; set; }
+        public DateTime Booking_appointment { get; set; }
         public string  Case_notes { get; set; }
         public int Duration { get; set; }
         public int Dosage_quantity { get; set; }

@@ -32,7 +32,7 @@
                 <td width="20%">@b.Patient_id</td>
                 <td width="20%">@b.Medicine_id</td>
                 <td width="20%">@b.Dosage_id</td>
-                <td width="20%">@b.Booking_appointment</td>
+                <td width="20%">@String.Format("{0:dd MMM yyyy HH:mm}", b.Booking_appointment)</td>
                 <td width="20%">
                     <a href="/Hospital/EditLog/@b.Log_id">Edit</a>
                 </td>
