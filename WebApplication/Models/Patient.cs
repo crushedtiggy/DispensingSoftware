@@ -9,6 +9,7 @@ namespace WebApplication.Models
     public class Patient
     {
         public int Patient_id { get; set; }
+        public int Queue_id { get; set; }
         public string Name { get; set; }
         public string Nric { get; set; }
         public string Gender { get; set; }

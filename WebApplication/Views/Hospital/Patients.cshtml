@@ -17,6 +17,7 @@
     <thead>
         <tr>
             <th scope="col" width="20%">Patient ID</th>
+            <th scope="col" width="20%">Queue ID</th>
             <th scope="col" width="20%">Name</th>
             <th scope="col" width="20%">NRIC</th>
             <th scope="col" width="20%">Gender</th>
@@ -28,13 +29,14 @@
 <tbody>
     <tr scope="row">
         <td width="20%">@b.Patient_id</td>
+        <td width="20%">@b.Queue_id</td>
         <td width="20%">@b.Name</td>
         <td width="20%">@b.Nric</td>
         <td width="20%">@b.Gender</td>
         <td width="20%">
             @if (b.Is_Urgent.Equals("true"))
             {
-            <center><img src="~/images/police.png" height="25" width="25" /></center>
+                <center><img src="~/images/police.png" height="25" width="25" /></center>
             }
         </td>
     </tr>
