@@ -1,0 +1,39 @@
+﻿
+<title>Summernote - Bootstrap 4</title>
+
+<script type="text/javascript">
+    $(function () {
+        $('.summernote').summernote({
+            height: 200,
+        });
+
+        $('form').on('submit', function (e) {
+            e.preventDefault();
+            alert($('.summernote').summernote('code'));
+        });
+    });
+</script>
+
+<body>
+    <div class="container">
+        <h1>Summernote using textarea</h1>
+        <div class="card">
+            <div class="card-header">
+                Textarea
+            </div>
+            <div class="card-body">
+                <form action="#" novalidate>
+                    <div class="form-group">
+                        <label for="input">Text</label>
+                        <input type="text" class="form-control" id="input" value="Title">
+                    </div>
+                    <div class="form-group">
+                        <label for="contents">Contents</label>
+                        <textarea name="text" class="summernote" id="contents" title="Contents"></textarea>
+                    </div>
+                    <input type="submit" class="btn btn-primary" value="Submit">
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
