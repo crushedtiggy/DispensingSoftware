@@ -13,5 +13,13 @@ namespace WebApplication.Models
         public string Doctor_name { get; set; }
         public string Practicing_place_name { get; set; }
         public string Practicing_address { get; set; }
+        public int Medicine_id { get; set; }
+        public int Dosage_id { get; set; }
+        public DateTime Booking_appointment { get; set; }
+        public string Case_notes { get; set; }
+        public int Duration { get; set; }
+        public int Dosage_quantity { get; set; }
+        public string Instructions { get; set; }
+        public double Total_price { get; set; }
     }
 }

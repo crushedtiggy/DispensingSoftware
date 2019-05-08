@@ -5,9 +5,23 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="Views\Hospital\AddLog.cshtml" />
+    <Content Remove="Views\Hospital\EditLog.cshtml" />
+    <Content Remove="Views\Hospital\Logs.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Include="Views\Hospital\Index.cshtml" />
     <None Include="Views\Test\index.cshtml" />
     <None Include="wwwroot\grunts\grunt-build.js" />
+    <None Include="wwwroot\js\bootstrap.bundle.js" />
+    <None Include="wwwroot\js\bootstrap.bundle.js.map" />
+    <None Include="wwwroot\js\bootstrap.bundle.min.js" />
+    <None Include="wwwroot\js\bootstrap.bundle.min.js.map" />
+    <None Include="wwwroot\js\bootstrap.js" />
+    <None Include="wwwroot\js\bootstrap.js.map" />
+    <None Include="wwwroot\js\bootstrap.min.js" />
+    <None Include="wwwroot\js\bootstrap.min.js.map" />
     <None Include="wwwroot\lang\summernote-ar-AR.js" />
     <None Include="wwwroot\lang\summernote-bg-BG.js" />
     <None Include="wwwroot\lang\summernote-ca-ES.js" />

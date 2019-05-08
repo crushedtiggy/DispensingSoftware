@@ -50,20 +50,22 @@ namespace WebApplication.Controllers
             return View(model);
         }
 
-        public IActionResult Logs()
-        {
-            List<Log> model = DBUtl.GetList<Log>(
-                        "SELECT Log_id, Patient_id, Medicine_id, Dosage_id, Booking_appointment FROM log ORDER BY Log_id");
-            return View(model);
-        }
-
         public IActionResult AddPrescription()
-        {   
+        {
             var patients = DBUtl.GetList<Patient>(
-                                                 "SELECT * FROM patient ORDER BY Patient_id");
+                                     "SELECT * FROM patient ORDER BY Patient_id");
             ViewData["patient"] = new SelectList(patients, "Patient_id", "Name");
+
+            var medicines = DBUtl.GetList<Medicine>(
+                                     "SELECT * FROM medicine ORDER BY Medicine_id");
+            ViewData["medicine"] = new SelectList(medicines, "Medicine_id", "Medicine_name");
+
+            var dosages = DBUtl.GetList<Dosage>(
+                         "SELECT * FROM dosage ORDER BY Dosage_id");
+            ViewData["dosage"] = new SelectList(dosages, "Dosage_id", "Long_form_description");
             return View();
         }
+
 
         public IActionResult Prescriptions()
         {
@@ -84,22 +86,6 @@ namespace WebApplication.Controllers
             return View();
         }
 
-        public IActionResult AddLog()
-        {
-            var patients = DBUtl.GetList<Patient>(
-                                     "SELECT * FROM patient ORDER BY Patient_id");
-            ViewData["patient"] = new SelectList(patients, "Patient_id", "Name");
-
-            var medicines = DBUtl.GetList<Medicine>(
-                                     "SELECT * FROM medicine ORDER BY Medicine_id");
-            ViewData["medicine"] = new SelectList(medicines, "Medicine_id", "Medicine_name");
-
-            var dosages = DBUtl.GetList<Dosage>(
-                         "SELECT * FROM dosage ORDER BY Dosage_id");
-            ViewData["dosage"] = new SelectList(dosages, "Dosage_id", "Long_form_description");
-            return View();
-        }
-
         [HttpPost]
         public IActionResult AddPatient(Patient newPatient)
         {
@@ -112,37 +98,45 @@ namespace WebApplication.Controllers
             else
             {
                 int queueNo = CheckQueueNumber(GetQueueCategoryId(newPatient));
-                int patientId;
                 List<Patient> patients = DBUtl.GetList<Patient>(
                                     "SELECT * FROM patient ORDER BY patient_id");
-                if (patients.Count == 0)
+                List<PatientCheck> checkPatients = DBUtl.GetList<PatientCheck>("SELECT * FROM patientcheck ORDER BY Check_id");
+                int check;
+                int patientid;
+                if (checkPatients.Count == 0)
                 {
-                    patientId = 1;
+                    check = 1;
                 }
                 else
                 {
-                    patientId = patients.LastOrDefault().Patient_id + 1;
+                    check = checkPatients.Count + 1;
+                }
+                if (patients.Count == 0)
+                {
+                    patientid = 1;
+                }
+                else
+                {
+                    patientid = patients.Count + 1;
                 }
 
-                string sql =
-//                       @"INSERT INTO testcheck (test_id, Name, Nric, Gender, Date_of_birth, Race, Height, Weight, Allergy, Smoke, Alcohol, Has_travel, Has_flu, Has_following_symptoms, Address, Postal_code, Phone_no, Email, Remarks, Registered_datetime, Is_Urgent)
-//                                    VALUES('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', '{6}', '{7}', '{8}', '{9}', '{10}', '{11}', '{12}', '{13}', '{14}', '{15}', '{16}', '{17}', '{18}', GETDATE(), '{19}')
-//LOCK TABLES patient WRITE, testcheck WRITE;
+                string sql = @"INSERT INTO patientcheck WITH (TABLOCKX) (Check_id, Name, Nric, Gender, Date_of_birth, Race, Height, Weight, Allergy, Smoke, Alcohol, Has_travel, Has_flu, Has_following_symptoms, Address, Postal_code, Phone_no, Email, Remarks, Registered_datetime, Is_Urgent) VALUES('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', '{6}', '{7}', '{8}', '{9}', '{10}', '{11}', '{12}', '{13}', '{14}', '{15}', '{16}', '{17}', '{18}', GETDATE(), '{19}');
 
-@"INSERT INTO patient (Patient_id, Queue_id, Name, Nric, Gender, Date_of_birth, Race, Height, Weight, Allergy, Smoke, Alcohol, Has_travel, Has_flu, Has_following_symptoms, Address, Postal_code, Phone_no, Email, Remarks, Registered_datetime, Is_Urgent)
-                                    VALUES('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', '{6}', '{7}', '{8}', '{9}', '{10}', '{11}', '{12}', '{13}', '{14}', '{15}', '{16}', '{17}', '{18}', '{19}', GETDATE(), '{20}')";
-//DELETE from testcheck WHERE testcheck.Name = patient.Name;
-//UNLOCK TABLES;";
-                string queueSQL = @"INSERT INTO queue (Queue_id, Patient_id, Serve_status_id, Queue_category_id, Queue_datetime) VALUES ('{0}', '{1}', '{2}', '{3}', GETDATE())";
-                string categorySQL = @"INSERT INTO category{0} (Queue_no, Created_by) VALUES ('{1}', '{2}')";
+INSERT INTO patient WITH (TABLOCKX) (Patient_id, Queue_id, Name, Nric, Gender, Date_of_birth, Race, Height, Weight, Allergy, Smoke, Alcohol, Has_travel, Has_flu, Has_following_symptoms, Address, Postal_code, Phone_no, Email, Remarks, Registered_datetime, Is_Urgent)
+                                    VALUES ('{20}', '{21}', '{22}', '{23}', '{24}', '{25}', '{26}', '{27}', '{28}', '{29}', '{30}', '{31}', '{32}', '{33}', '{34}', '{35}', '{36}', '{37}', '{38}', '{39}', GETDATE(), '{40}');
 
-                DateTime date = newPatient.Date_of_birth.Date;
+INSERT INTO queue WITH (TABLOCKX) (Queue_id, Patient_id, Serve_status_id, Queue_category_id, Queue_datetime) VALUES ('{41}', '{42}', '{43}', '{44}', GETDATE());
 
+INSERT INTO category{45} WITH (TABLOCKX) (Queue_no, Created_by) VALUES ('{46}', '{47}');
 
-                if (DBUtl.ExecSQL(sql,
-                                        patientId, queueNo, newPatient.Name, newPatient.Nric,
-                                        newPatient.Gender, $"{date:yyyy-MM-dd}", newPatient.Race,
-                                        newPatient.Height, newPatient.Weight, newPatient.Allergy, newPatient.Smoke, newPatient.Alcohol, newPatient.Has_travel, newPatient.Has_flu, newPatient.Has_following_symptoms, newPatient.Address, newPatient.Postal_code, newPatient.Phone_no, newPatient.Email, newPatient.Remarks, newPatient.Is_Urgent) == 1 && DBUtl.ExecSQL(queueSQL, queueNo, patientId, 1, GetQueueCategoryId(newPatient)) == 1 && DBUtl.ExecSQL(categorySQL, GetQueueCategoryId(newPatient), queueNo, "admin") == 1)
+DELETE from patientcheck WITH (TABLOCKX);
+";
+
+                if (DBUtl.ExecSQL(sql, check, newPatient.Name, newPatient.Nric,
+                                                       newPatient.Gender, $"{newPatient.Date_of_birth:yyyy-MM-dd}", newPatient.Race,
+                                                       newPatient.Height, newPatient.Weight, newPatient.Allergy, newPatient.Smoke, newPatient.Alcohol, newPatient.Has_travel, newPatient.Has_flu, newPatient.Has_following_symptoms, newPatient.Address, newPatient.Postal_code, newPatient.Phone_no, newPatient.Email, newPatient.Remarks, newPatient.Is_Urgent, patientid, queueNo, newPatient.Name, newPatient.Nric,
+                                                       newPatient.Gender, $"{newPatient.Date_of_birth:yyyy-MM-dd}", newPatient.Race,
+                                                       newPatient.Height, newPatient.Weight, newPatient.Allergy, newPatient.Smoke, newPatient.Alcohol, newPatient.Has_travel, newPatient.Has_flu, newPatient.Has_following_symptoms, newPatient.Address, newPatient.Postal_code, newPatient.Phone_no, newPatient.Email, newPatient.Remarks, newPatient.Is_Urgent, queueNo, patientid, 1, GetQueueCategoryId(newPatient), GetQueueCategoryId(newPatient), queueNo, "admin") == 1)
                 {
                     TempData["Message"] = "Patient Added";
                     TempData["MsgType"] = "success";
@@ -152,31 +146,65 @@ namespace WebApplication.Controllers
                     TempData["Message"] = DBUtl.DB_Message;
                     TempData["MsgType"] = "danger";
                 }
-                return RedirectToAction("Patients");
+                ViewData["QueueNumber"] = queueNo;
+                return View("ShowQueueNumber");
             }
         }
 
         [HttpPost]
-        public IActionResult AddPrescription(Prescription prescription, Patient patient)
+        public IActionResult AddPrescription(Prescription prescription)
         {
             List<Prescription> preps = DBUtl.GetList<Prescription>(
                                     "SELECT * FROM prescription ORDER BY Prescription_id");
+            List<Medicine> medicines = DBUtl.GetList<Medicine>("SELECT Price FROM medicine ORDER BY Medicine_id");
+            List<Patient> patients = DBUtl.GetList<Patient>("SELECT Patient_id, Queue_id FROM patient ORDER BY Patient_id");
+
+            int count;
+            double price = 0;
+            int queueNo = 0;
+
+            foreach (Medicine i in medicines)
+            {
+                if (i.Medicine_id == prescription.Medicine_id)
+                {
+                    price = i.Price;
+                }
+            }
+            double total = prescription.Dosage_quantity * price;
+
+            foreach (Patient i in patients)
+            {
+                if (i.Patient_id == prescription.Patient_id)
+                {
+                    queueNo = i.Queue_id;
+                }
+            }
+
+            if (preps.Count == 0)
+            {
+                count = 1;
+            }
+            else
+            {
+                count = preps.LastOrDefault().Prescription_id + 1;
+            }
 
             if (!ModelState.IsValid)
             {
-                ViewData["Message"] = "Invalid Input";
+                ViewData["Message"] = DBUtl.DB_Message;
                 ViewData["MsgType"] = "warning";
                 return View("AddPrescription");
             }
             else
             {
-               
+
 
                 string sql =
-                       @"INSERT INTO prescription (Prescription_id, Patient_id, Doctor_mcr, Doctor_name, Practicing_place_name, Practicing_address)
-                                    VALUES('{0}', '{1}', '{2}', '{3}', '{4}', '{5}')";
+                       @"INSERT INTO prescription WITH (TABLOCKX)  (Prescription_id, Patient_id, Medicine_id, Dosage_id, Doctor_mcr, Doctor_name, Practicing_place_name, Practicing_address, Booking_appointment, Case_notes, Duration, Dosage_quantity, Instructions, Total_price)
+                                    VALUES('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', '{6}', '{7}', '{8}', '{9}', '{10}', '{11}', '{12}', '{13}')";
+                string update = @"UPDATE queue WITH (TABLOCKX) SET Serve_status_id = '2' WHERE Patient_id = '{0}' AND Queue_id = '{1}'";
 
-                if (DBUtl.ExecSQL(sql, preps.LastOrDefault().Prescription_id + 1, patient.Patient_id, prescription.Doctor_mcr, prescription.Doctor_name, prescription.Practicing_place_name, prescription.Practicing_address) == 1)
+                if (DBUtl.ExecSQL(sql, count, prescription.Patient_id, prescription.Medicine_id, prescription.Dosage_id, prescription.Doctor_mcr, prescription.Doctor_name, prescription.Practicing_place_name, prescription.Practicing_address, $"{prescription.Booking_appointment:yyyy-MM-dd HH:mm}", prescription.Case_notes, prescription.Duration, prescription.Dosage_quantity, prescription.Instructions, total) == 1 && DBUtl.ExecSQL(update, prescription.Patient_id, queueNo) == 1)
                 {
                     TempData["Message"] = "Prescription Added";
                     TempData["MsgType"] = "success";
@@ -199,12 +227,19 @@ namespace WebApplication.Controllers
             {
                 Prescription prep = new Prescription
                 {
-                    Patient_id = (int)dt.Rows[0]["Patient_id"],
                     Prescription_id = (int)dt.Rows[0]["Prescription_id"],
+                    Patient_id = (int)dt.Rows[0]["Patient_id"],
+                    Medicine_id = (int)dt.Rows[0]["Medicine_id"],
+                    Dosage_id = (int)dt.Rows[0]["Dosage_id"],
                     Doctor_mcr = dt.Rows[0]["Doctor_mcr"].ToString(),
                     Doctor_name = dt.Rows[0]["Doctor_name"].ToString(),
                     Practicing_place_name = dt.Rows[0]["Practicing_place_name"].ToString(),
-                    Practicing_address = dt.Rows[0]["Practicing_address"].ToString()
+                    Practicing_address = dt.Rows[0]["Practicing_address"].ToString(),
+                    Booking_appointment = (DateTime)dt.Rows[0]["Booking_appointment"],
+                    Case_notes = dt.Rows[0]["Case_notes"].ToString(),
+                    Duration = (int)dt.Rows[0]["Duration"],
+                    Dosage_quantity = (int)dt.Rows[0]["Dosage_quantity"],
+                    Instructions = dt.Rows[0]["Instructions"].ToString()
                 };
 
                 return View(prep);
@@ -217,74 +252,24 @@ namespace WebApplication.Controllers
             }
         }
 
-        public IActionResult EditLog(String id)
+        // Show queue number after patient is registered
+        public IActionResult ShowQueueNumber()
         {
-            string sql = "SELECT * FROM Log WHERE Log_id={0}";
-            string select = String.Format(sql, id);
-            DataTable dt = DBUtl.GetTable(select);
-            if (dt.Rows.Count == 1)
-            {
-                Log logRecord = new Log
-                {
-                    Log_id = (int)dt.Rows[0]["Log_id"],
-                    Patient_id = (int)dt.Rows[0]["Patient_id"],
-                    Medicine_id = (int)dt.Rows[0]["Medicine_id"],
-                    Dosage_id = (int)dt.Rows[0]["Dosage_id"],
-                    Booking_appointment = (DateTime) dt.Rows[0]["Booking_appointment"],
-                    Case_notes = dt.Rows[0]["Case_notes"].ToString(),
-                    Duration = (int)dt.Rows[0]["Duration"],
-                    Dosage_quantity = (int)dt.Rows[0]["Dosage_quantity"],
-                    Instructions = dt.Rows[0]["Instructions"].ToString(),
-                    Total_price = (double)dt.Rows[0]["Total_price"]
-                };
-
-                return View(logRecord);
-            }
-            else
-            {
-                TempData["Message"] = "Log Not Found";
-                TempData["MsgType"] = "warning";
-                return RedirectToAction("Logs");
-            }
+            return View();
         }
 
-        [HttpPost]
-        public IActionResult AddLog(Patient patient, Medicine medicine, Dosage dosage, Log log)
+        // Display queue number based on FCFS basis
+        public IActionResult GetQueueNumber()
         {
-            if (!ModelState.IsValid)
-            {
-                ViewData["Message"] = "Invalid Input";
-                ViewData["MsgType"] = "warning";
-                return View("AddLog");
-            }
-            else
-            {
-                List<Log> logs = DBUtl.GetList<Log>(
-                                     "SELECT * FROM log ORDER BY Log_id");
-
-                double totalPrice = medicine.Price * log.Dosage_quantity;
-
-                string update = @"UPDATE medicine SET Quantity = Quantity - {0} WHERE Medicine_id = {1};";
-                string sql =
-                       @"INSERT INTO log (Log_id, Patient_id, Medicine_id, Dosage_id, Booking_appointment, Case_notes, Duration, Dosage_quantity, Instructions, Total_price)
-                                    VALUES('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', '{6}', '{7}', '{8}', '{9}')";
-
-                if (DBUtl.ExecSQL(sql, logs.Count + 1, patient.Patient_id, medicine.Medicine_id, dosage.Dosage_id, $"{log.Booking_appointment:yyyy-MM-dd HH:mm}", log.Case_notes, log.Duration, log.Dosage_quantity, log.Instructions, totalPrice) == 1 && DBUtl.ExecSQL(update, log.Dosage_quantity, log.Medicine_id) == 1)
-                {
-                    TempData["Message"] = "Log Added";
-                    TempData["MsgType"] = "success";
-                }
-                else
-                {
-                    TempData["Message"] = DBUtl.DB_Message;
-                    TempData["MsgType"] = "danger";
-                }
-                return RedirectToAction("Index");
-            }
+            List<Queue> queues = DBUtl.GetList<Queue>(
+                                    "SELECT * FROM queue ORDER BY Queue_category_id, Queue_datetime WHERE Serve_status_id = '1'");
+            ViewData["QueueNumber"] = queues.FirstOrDefault().Queue_id;
+            return View();
         }
 
+
         [HttpPost]
-        public IActionResult DoPayment(Bill_transaction bill, Prescription prescription, Queue queue, Log log, Payment_Type type)
+        public IActionResult DoPayment(Bill_transaction bill, Prescription prescription, Queue queue, Payment_Type type)
         {
             return View();
         }
@@ -316,7 +301,7 @@ namespace WebApplication.Controllers
             return queueid;
         }
 
-        
+
         public int CheckQueueNumber(int queueid)
         {
             List<Category1> category1s = DBUtl.GetList<Category1>(
@@ -373,52 +358,7 @@ namespace WebApplication.Controllers
                     queueNo = category4s.LastOrDefault().Queue_no + 1;
                 }
             }
-
-            //if (queueid == 1)
-            //{
-            //    if (DBUtl.GetTable(sql, "category1", category1s.LastOrDefault().Queue_no).Rows.Count == 1)
-            //    {
-            //        queueNo = category1s.LastOrDefault().Queue_no + 1;
-            //    }
-            //    else 
-            //    {
-            //        queueNo = category1s.LastOrDefault().Queue_no + 1000;
-            //    }
-            //}
-            //else if (queueid == 2)
-            //{
-            //    if (DBUtl.GetTable(sql, "category2", category2s.LastOrDefault().Queue_no).Rows.Count == 1)
-            //    {
-            //        queueNo = category2s.LastOrDefault().Queue_no + 1;
-            //    }
-            //    else 
-            //    {
-            //        queueNo = category2s.LastOrDefault().Queue_no + 2000;
-            //    }
-            //}
-            //else if (queueid == 3)
-            //{
-            //    if (DBUtl.GetTable(sql, "category3", category3s.LastOrDefault().Queue_no).Rows.Count == 1)
-            //    {
-            //        queueNo = category3s.LastOrDefault().Queue_no + 1;
-            //    }
-            //    else 
-            //    {
-            //        queueNo = category3s.LastOrDefault().Queue_no + 3000;
-            //    }
-            //}
-            //else
-            //{
-            //    if (DBUtl.GetTable(sql, "category4", category4s.LastOrDefault().Queue_no).Rows.Count == 1)
-            //    {
-            //        queueNo = category4s.LastOrDefault().Queue_no + 1;
-            //    }
-            //    else 
-            //    {
-            //        queueNo = category4s.LastOrDefault().Queue_no + 4000;
-            //    }
-            //}
             return queueNo;
         }
     }
- }
+}

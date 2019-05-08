@@ -12,16 +12,6 @@
     <script src="~/lib/chartjs/chartjs-plugin-labels.min.js"></script>
     <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
 
-    <!-- include jquery -->
-    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js"></script>
-
-
-
-    <!-- include summernote -->
-    <link rel="stylesheet" href="../dist/summernote-bs4.css">
-    <script type="text/javascript" src="../dist/summernote-bs4.js"></script>
-
-
     @RenderSection("MoreScripts", false)
 
 </head>
@@ -63,15 +53,6 @@
                                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                                     <a class="dropdown-item" asp-action="Prescriptions">View Prescriptions</a>
                                     <a class="dropdown-item" asp-action="AddPrescription">Add Prescription</a>
-                                </div>
-                            </li>
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" asp-action="Logs" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color:azure">
-                                    Log
-                                </a>
-                                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                    <a class="dropdown-item" asp-action="Logs">View Logs</a>
-                                    <a class="dropdown-item" asp-action="AddLog">Add Log</a>
                                 </div>
                             </li>
                             <li class="nav-item dropdown">

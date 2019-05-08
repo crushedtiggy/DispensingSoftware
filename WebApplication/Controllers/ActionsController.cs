@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using WebApplication.Models;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -62,7 +64,7 @@ namespace WebApplication.Controllers
 
         public IActionResult CleanAll()
         {
-            string sql = @"DELETE FROM log;
+            string sql = @"
                             DELETE FROM prescription;
                             DELETE FROM queue;
                             DELETE FROM patient;

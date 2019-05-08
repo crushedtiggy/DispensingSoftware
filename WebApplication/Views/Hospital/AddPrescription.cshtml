@@ -1,10 +1,23 @@
 ﻿@model Prescription
+<!-- include jquery -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js"></script>
 
-@{
-    
-}
+<!-- include libraries BS -->
+@*<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.css" />*@
+<script src="//cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.5/umd/popper.js"></script>
+<script src="~/js/bootstrap.js"></script>
 
-
+<!-- include summernote -->
+<link rel="stylesheet" href="../dist/summernote-bs4.css">
+<script type="text/javascript" src="../dist/summernote-bs4.js"></script>
+<script type="text/javascript">
+    $(function () {
+        $('.summernote').summernote({
+            height: 200,
+            width: 500,
+        });;
+    });
+</script>
 <form asp-controller="Hospital"
       asp-action="AddPrescription"
       method="post">
@@ -66,6 +79,86 @@
         </div>
         <div class="col-sm-3">
             <span asp-validation-for="Practicing_address" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="form-group row row">
+        <label class="control-label col-sm-3" asp-for="Medicine_id">Select Medicine : </label>
+        <div class="col-sm-6">
+            <select class="form-control col-4" asp-for="Medicine_id"
+                    asp-items="@((SelectList)ViewData["medicine"])">
+                <option value="0" selected="selected">-- SELECT --</option>
+            </select>
+
+        </div>
+        <div class="col-sm-4">
+            <span asp-validation-for="Medicine_id" class="text-danger"></span>
+        </div>
+    </div>
+
+
+    <div class="form-group row row">
+        <label class="control-label col-sm-3" asp-for="Dosage_id">Select Dosage : </label>
+        <div class="col-sm-6">
+            <select class="form-control col-4" asp-for="Dosage_id"
+                    asp-items="@((SelectList)ViewData["dosage"])">
+                <option value="0" selected="selected">-- SELECT --</option>
+            </select>
+
+        </div>
+        <div class="col-sm-4">
+            <span asp-validation-for="Dosage_id" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="form-group row row">
+        <label class="control-label col-sm-3" asp-for="Booking_appointment">Booking Appointment : </label>
+        <div class="col-sm-4">
+            <input asp-for="Booking_appointment" class="form-control" placeholder="YYYY-MM-DD HH:MM" />
+        </div>
+        <div class="col-sm-4">
+            <span asp-validation-for="Booking_appointment" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="form-group row row">
+        <label class="control-label col-sm-3" asp-for="Case_notes">Case Notes : </label>
+        <div class="col-sm-4">
+            <textarea rows="8" cols="50" asp-for="Case_notes" class="summernote">
+</textarea>
+        </div>
+        <div class="col-sm-4">
+            <span asp-validation-for="Case_notes" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="form-group row row">
+        <label class="control-label col-sm-3" asp-for="Duration">Duration : </label>
+        <div class="col-sm-4">
+            <input asp-for="Duration" class="form-control" />
+        </div>
+        <div class="col-sm-4">
+            <span asp-validation-for="Duration" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="form-group row row">
+        <label class="control-label col-sm-3" asp-for="Dosage_quantity">Dosage Quantity : </label>
+        <div class="col-sm-4">
+            <input asp-for="Dosage_quantity" class="form-control" />
+        </div>
+        <div class="col-sm-4">
+            <span asp-validation-for="Dosage_quantity" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="form-group row row">
+        <label class="control-label col-sm-3" asp-for="Instructions">Instructions : </label>
+        <div class="col-sm-4">
+            <input asp-for="Instructions" class="form-control" />
+        </div>
+        <div class="col-sm-4">
+            <span asp-validation-for="Instructions" class="text-danger"></span>
         </div>
     </div>
     <div class="form-group row">
