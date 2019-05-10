@@ -10,7 +10,6 @@ namespace WebApplication.Models
         public int Bill_transaction_id { get; set; }
         public int Prescription_id { get; set; }
         public int Queue_id { get; set; }
-        public int Log_id { get; set; }
         public int Payment_type { get; set; }
         public double Subtotal { get; set; }
         public DateTime Payment_datetime { get; set; }

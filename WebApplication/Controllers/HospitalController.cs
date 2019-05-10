@@ -120,7 +120,7 @@ namespace WebApplication.Controllers
                     patientid = patients.Count + 1;
                 }
 
-                string sql = @"INSERT INTO patientcheck WITH (TABLOCKX) (Check_id, Name, Nric, Gender, Date_of_birth, Race, Height, Weight, Allergy, Smoke, Alcohol, Has_travel, Has_flu, Has_following_symptoms, Address, Postal_code, Phone_no, Email, Remarks, Registered_datetime, Is_Urgent) VALUES('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', '{6}', '{7}', '{8}', '{9}', '{10}', '{11}', '{12}', '{13}', '{14}', '{15}', '{16}', '{17}', '{18}', GETDATE(), '{19}');
+                string sql = @"INSERT INTO patientcheck (Check_id, Name, Nric, Gender, Date_of_birth, Race, Height, Weight, Allergy, Smoke, Alcohol, Has_travel, Has_flu, Has_following_symptoms, Address, Postal_code, Phone_no, Email, Remarks, Registered_datetime, Is_Urgent) VALUES('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', '{6}', '{7}', '{8}', '{9}', '{10}', '{11}', '{12}', '{13}', '{14}', '{15}', '{16}', '{17}', '{18}', GETDATE(), '{19}');
 
 INSERT INTO patient WITH (TABLOCKX) (Patient_id, Queue_id, Name, Nric, Gender, Date_of_birth, Race, Height, Weight, Allergy, Smoke, Alcohol, Has_travel, Has_flu, Has_following_symptoms, Address, Postal_code, Phone_no, Email, Remarks, Registered_datetime, Is_Urgent)
                                     VALUES ('{20}', '{21}', '{22}', '{23}', '{24}', '{25}', '{26}', '{27}', '{28}', '{29}', '{30}', '{31}', '{32}', '{33}', '{34}', '{35}', '{36}', '{37}', '{38}', '{39}', GETDATE(), '{40}');
@@ -129,7 +129,9 @@ INSERT INTO queue WITH (TABLOCKX) (Queue_id, Patient_id, Serve_status_id, Queue_
 
 INSERT INTO category{45} WITH (TABLOCKX) (Queue_no, Created_by) VALUES ('{46}', '{47}');
 
-DELETE from patientcheck WITH (TABLOCKX);
+DELETE from patientcheck WITH (TABLOCKX) WHERE Check_id = MIN(Check_id);
+
+COMMIT;
 ";
 
                 if (DBUtl.ExecSQL(sql, check, newPatient.Name, newPatient.Nric,
@@ -201,8 +203,10 @@ DELETE from patientcheck WITH (TABLOCKX);
 
                 string sql =
                        @"INSERT INTO prescription WITH (TABLOCKX)  (Prescription_id, Patient_id, Medicine_id, Dosage_id, Doctor_mcr, Doctor_name, Practicing_place_name, Practicing_address, Booking_appointment, Case_notes, Duration, Dosage_quantity, Instructions, Total_price)
-                                    VALUES('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', '{6}', '{7}', '{8}', '{9}', '{10}', '{11}', '{12}', '{13}')";
-                string update = @"UPDATE queue WITH (TABLOCKX) SET Serve_status_id = '2' WHERE Patient_id = '{0}' AND Queue_id = '{1}'";
+                                    VALUES('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', '{6}', '{7}', '{8}', '{9}', '{10}', '{11}', '{12}', '{13}');
+COMMIT;";
+                string update = @"UPDATE queue WITH (TABLOCKX) SET Serve_status_id = '2' WHERE Patient_id = '{0}' AND Queue_id = '{1}'
+COMMIT;";
 
                 if (DBUtl.ExecSQL(sql, count, prescription.Patient_id, prescription.Medicine_id, prescription.Dosage_id, prescription.Doctor_mcr, prescription.Doctor_name, prescription.Practicing_place_name, prescription.Practicing_address, $"{prescription.Booking_appointment:yyyy-MM-dd HH:mm}", prescription.Case_notes, prescription.Duration, prescription.Dosage_quantity, prescription.Instructions, total) == 1 && DBUtl.ExecSQL(update, prescription.Patient_id, queueNo) == 1)
                 {
@@ -236,11 +240,21 @@ DELETE from patientcheck WITH (TABLOCKX);
                     Practicing_place_name = dt.Rows[0]["Practicing_place_name"].ToString(),
                     Practicing_address = dt.Rows[0]["Practicing_address"].ToString(),
                     Booking_appointment = (DateTime)dt.Rows[0]["Booking_appointment"],
-                    Case_notes = dt.Rows[0]["Case_notes"].ToString(),
                     Duration = (int)dt.Rows[0]["Duration"],
                     Dosage_quantity = (int)dt.Rows[0]["Dosage_quantity"],
                     Instructions = dt.Rows[0]["Instructions"].ToString()
                 };
+                var patients = DBUtl.GetList<Patient>(
+                                     "SELECT * FROM patient ORDER BY Patient_id");
+                ViewData["patient"] = new SelectList(patients, "Patient_id", "Name");
+
+                var medicines = DBUtl.GetList<Medicine>(
+                                         "SELECT * FROM medicine ORDER BY Medicine_id");
+                ViewData["medicine"] = new SelectList(medicines, "Medicine_id", "Medicine_name");
+
+                var dosages = DBUtl.GetList<Dosage>(
+                             "SELECT * FROM dosage ORDER BY Dosage_id");
+                ViewData["dosage"] = new SelectList(dosages, "Dosage_id", "Long_form_description");
 
                 return View(prep);
             }
@@ -258,20 +272,50 @@ DELETE from patientcheck WITH (TABLOCKX);
             return View();
         }
 
-        // Display queue number based on FCFS basis
+        // Display queue number based on priority handling
         public IActionResult GetQueueNumber()
         {
             List<Queue> queues = DBUtl.GetList<Queue>(
-                                    "SELECT * FROM queue ORDER BY Queue_category_id, Queue_datetime WHERE Serve_status_id = '1'");
+                                    "SELECT Queue_id FROM queue WHERE DATEDIFF(MINUTE, Queue_datetime, GETDATE()) > 60 AND Serve_status_id = '1' AND Queue_category_id = (SELECT MIN(Queue_category_id) FROM queue) ORDER BY Queue_category_id, Queue_datetime");
+            if (queues.Count == 0)
+            {
+                TempData["Message"] = "No queue number that exceeds 1 hour of waiting / No queue number available";
+                TempData["MsgType"] = "warning";
+                return RedirectToAction("Prescriptions");
+            }
             ViewData["QueueNumber"] = queues.FirstOrDefault().Queue_id;
             return View();
         }
 
 
-        [HttpPost]
-        public IActionResult DoPayment(Bill_transaction bill, Prescription prescription, Queue queue, Payment_Type type)
+        public IActionResult DoPayment(String id)
         {
-            return View();
+            string sql = "SELECT Prescription_id FROM bill_transaction WHERE Prescription_id={0}";
+            string select = String.Format(sql, id);
+            DataTable dt = DBUtl.GetTable(select);
+            if (dt.Rows.Count == 1)
+            {
+                Bill_transaction bill_Transaction = new Bill_transaction
+                {
+                    Bill_transaction_id = (int)dt.Rows[0]["Bill_transaction_id"],
+                    Prescription_id = (int)dt.Rows[0]["Prescription_id"],
+                    Queue_id = (int)dt.Rows[0]["Queue_id"],
+                    Payment_type = (int)dt.Rows[0]["Payment_type"],
+                    Subtotal = (Double)dt.Rows[0]["Subtotal"],
+                    Payment_datetime = (DateTime)dt.Rows[0]["Payment_datetime"]
+                };
+                var types = DBUtl.GetList<Payment_Type>(
+                                     "SELECT * FROM payment_type ORDER BY Payment_type");
+                ViewData["type"] = new SelectList(types, "Payment_type", "Payment_type_description");
+
+                return View(bill_Transaction);
+            }
+            else
+            {
+                TempData["Message"] = "No prescription ID found to generate a bill transaction";
+                TempData["MsgType"] = "warning";
+                return RedirectToAction("Prescriptions");
+            }
         }
 
         public int GetQueueCategoryId(Patient patient)
@@ -359,6 +403,60 @@ DELETE from patientcheck WITH (TABLOCKX);
                 }
             }
             return queueNo;
+        }
+
+        [HttpPost]
+        public IActionResult ModifyCaseNotes()
+        {
+            string id = HttpContext.Request.Form["prescriptionid"].ToString();
+            string notes = HttpContext.Request.Form["text"].ToString().Trim();
+            string update = @"UPDATE prescription SET Case_notes = '{0}' WHERE Prescription_id = '{1}'";
+            if (DBUtl.ExecSQL(update, notes, id) == 1)
+            {
+                TempData["Message"] = "Case Notes modified";
+                TempData["MsgType"] = "success";
+                return RedirectToAction("Prescriptions");
+            }
+            else
+            {
+                TempData["Message"] = DBUtl.DB_Message;
+                TempData["MsgType"] = "danger";
+                return View("Prescriptions");
+            }
+        }
+
+        [HttpPost]
+        public IActionResult EditPrescription(Prescription prescription)
+        {
+            if (!ModelState.IsValid)
+            {
+                ViewData["Message"] = DBUtl.DB_Message;
+                ViewData["MsgType"] = "warning";
+                return View("EditPrescription");
+            }
+            else
+            {
+
+                string update = @"UPDATE queue WITH (TABLOCKX) SET Medicine_id = '{0}', Dosage_id = '{1}', Doctor_mcr = '{2}', Doctor_name '{3}', Practicing_place_name = '{4}', Practicing_address '{5}', Booking_appointment = '{6}', Duration = '{7}', Dosage_quantity = '{8}', Instructions = '{9}' WHERE Prescription_id = '{10}' AND Patient_id = '{11}'
+COMMIT;";
+
+                if (DBUtl.ExecSQL(update, prescription.Medicine_id, prescription.Dosage_id, prescription.Doctor_mcr, prescription.Doctor_name, prescription.Practicing_place_name, prescription.Practicing_address, $"{prescription.Booking_appointment:yyyy-MM-dd HH:mm}", prescription.Duration, prescription.Dosage_quantity, prescription.Instructions, prescription.Prescription_id, prescription.Patient_id) == 1)
+                {
+                    TempData["Message"] = "Prescription Edited";
+                    TempData["MsgType"] = "success";
+                }
+                else
+                {
+                    TempData["Message"] = DBUtl.DB_Message;
+                    TempData["MsgType"] = "danger";
+                }
+                return RedirectToAction("Prescriptions");
+            }
+        }
+
+        public IActionResult GetTransaction()
+        {
+            return View();
         }
     }
 }

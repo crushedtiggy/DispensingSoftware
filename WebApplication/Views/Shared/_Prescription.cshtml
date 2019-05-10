@@ -1,0 +1,136 @@
+﻿@model Prescription
+@*Do not use for EditPrescription because the textarea will only reflect the HTML syntax for the case notes.*@
+
+<div class="form-group row row">
+    <label class="control-label col-sm-3" asp-for="Patient_id">Select Patient : </label>
+    <div class="col-sm-6">
+        <select class="form-control col-4" asp-for="Patient_id"
+                asp-items="@((SelectList)ViewData["patient"])">
+            <option value="0" selected="selected">-- SELECT --</option>
+        </select>
+
+    </div>
+    <div class="col-sm-4">
+        <span asp-validation-for="Patient_id" class="text-danger"></span>
+    </div>
+</div>
+
+<div class="form-group row row">
+    <label class="control-label col-sm-3" asp-for="Doctor_mcr">Doctor MCR : </label>
+    <div class="col-sm-4">
+        <input asp-for="Doctor_mcr" class="form-control" />
+    </div>
+    <div class="col-sm-4">
+        <span asp-validation-for="Doctor_mcr" class="text-danger"></span>
+    </div>
+</div>
+
+<div class="form-group row row">
+    <label class="control-label col-sm-3" asp-for="Doctor_name">Doctor Name : </label>
+    <div class="col-sm-4">
+        <input asp-for="Doctor_name" class="form-control" />
+    </div>
+    <div class="col-sm-4">
+        <span asp-validation-for="Doctor_name" class="text-danger"></span>
+    </div>
+</div>
+
+<div class="form-group row">
+    <label class="control-label col-sm-3" asp-for="Practicing_place_name">Practicing Place : </label>
+    <div class="col-sm-5">
+        <input class="form-control" asp-for="Practicing_place_name" />
+    </div>
+    <div class="col-sm-4">
+        <span asp-validation-for="Practicing_place_name" class="text-danger"></span>
+    </div>
+</div>
+
+<div class="form-group row row">
+    <label class="control-label col-sm-3" asp-for="Practicing_address">Practicing Address : </label>
+    <div class="col-sm-5">
+        <input class="form-control" asp-for="Practicing_address" />
+    </div>
+    <div class="col-sm-3">
+        <span asp-validation-for="Practicing_address" class="text-danger"></span>
+    </div>
+</div>
+
+<div class="form-group row row">
+    <label class="control-label col-sm-3" asp-for="Medicine_id">Select Medicine : </label>
+    <div class="col-sm-6">
+        <select class="form-control col-4" asp-for="Medicine_id"
+                asp-items="@((SelectList)ViewData["medicine"])">
+            <option value="0" selected="selected">-- SELECT --</option>
+        </select>
+
+    </div>
+    <div class="col-sm-4">
+        <span asp-validation-for="Medicine_id" class="text-danger"></span>
+    </div>
+</div>
+
+
+<div class="form-group row row">
+    <label class="control-label col-sm-3" asp-for="Dosage_id">Select Dosage : </label>
+    <div class="col-sm-6">
+        <select class="form-control col-4" asp-for="Dosage_id"
+                asp-items="@((SelectList)ViewData["dosage"])">
+            <option value="0" selected="selected">-- SELECT --</option>
+        </select>
+
+    </div>
+    <div class="col-sm-4">
+        <span asp-validation-for="Dosage_id" class="text-danger"></span>
+    </div>
+</div>
+
+<div class="form-group row row">
+    <label class="control-label col-sm-3" asp-for="Booking_appointment">Booking Appointment : </label>
+    <div class="col-sm-4">
+        <input asp-for="Booking_appointment" class="form-control" placeholder="YYYY-MM-DD HH:MM" />
+    </div>
+    <div class="col-sm-4">
+        <span asp-validation-for="Booking_appointment" class="text-danger"></span>
+    </div>
+</div>
+
+<div class="form-group row row">
+    <label class="control-label col-sm-3" asp-for="Case_notes">Case Notes : </label>
+    <div class="col-sm-4">
+        <textarea rows="8" cols="50" asp-for="Case_notes" class="summernote">
+</textarea>
+    </div>
+    <div class="col-sm-4">
+        <span asp-validation-for="Case_notes" class="text-danger"></span>
+    </div>
+</div>
+
+<div class="form-group row row">
+    <label class="control-label col-sm-3" asp-for="Duration">Duration : </label>
+    <div class="col-sm-4">
+        <input asp-for="Duration" class="form-control" />
+    </div>
+    <div class="col-sm-4">
+        <span asp-validation-for="Duration" class="text-danger"></span>
+    </div>
+</div>
+
+<div class="form-group row row">
+    <label class="control-label col-sm-3" asp-for="Dosage_quantity">Dosage Quantity : </label>
+    <div class="col-sm-4">
+        <input asp-for="Dosage_quantity" class="form-control" />
+    </div>
+    <div class="col-sm-4">
+        <span asp-validation-for="Dosage_quantity" class="text-danger"></span>
+    </div>
+</div>
+
+<div class="form-group row row">
+    <label class="control-label col-sm-3" asp-for="Instructions">Instructions : </label>
+    <div class="col-sm-4">
+        <input asp-for="Instructions" class="form-control" />
+    </div>
+    <div class="col-sm-4">
+        <span asp-validation-for="Instructions" class="text-danger"></span>
+    </div>
+</div>
