@@ -1,50 +1,53 @@
 ﻿@model List<Prescription>
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="../dist/summernote-bs4.css">
-    <script type="text/javascript" src="../dist/summernote-bs4.js"></script>
-    <script src="~/lib/bootstrap/js/bootstrap.js"></script>
-    <script src="~/lib/bootstrap/js/bootstrap.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="../dist/summernote-bs4.css">
+<script type="text/javascript" src="../dist/summernote-bs4.js"></script>
+<script src="~/lib/bootstrap/js/bootstrap.js"></script>
+<script src="~/lib/bootstrap/js/bootstrap.min.js"></script>
 
-    @{
+@{
     ViewBag.Title = "Index";
     var patients = ViewData["patients"] as List<Patient>
         ;
-        }
+}
 
-        <script type="text/javascript">
-            $(function () {
-                $('.summernote').summernote({
-                    height: 200,
-                    width: 400,
-                });
-            });
-        </script>
+<script type="text/javascript">
+    $(function () {
+        $('.summernote').summernote({
+            height: 200,
+            width: 400,
+            placeholder: 'Enter here'
+        });
+    });
+</script>
 
-        <h2>Prescriptions</h2>
-        @*<h4 style="text-align:center"> <a asp-action="GetQueueNumber">Get Queue Number</a></h4>*@
-        @if (TempData["Message"] != null)
+<h2>Prescriptions</h2>
+@*<h4 style="text-align:center"> <a asp-action="GetQueueNumber">Get Queue Number</a></h4>*@
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-@TempData[" MsgType"]">
+        @TempData["Message"]
+    </div>
+}
+
+<span style="color:red">@TempData["Msg"]</span>
+<form asp-controller="Hospital"
+      asp-action="ProceedPack"
+      method="post">
+    <table class="table table-bordered table-condensed table-hover table-striped">
+        <thead>
+            <tr>
+                <th scope="col" width="20%">Prescription ID</th>
+                <th scope="col" width="20%">Patient ID</th>
+                <th scope="col" width="20%">Medicine ID</th>
+                <th scope="col" width="20%">Dosage ID</th>
+                <th scope="col" width="20%">Name</th>
+                <th scope="col" width="20%">Case Notes</th>
+            </tr>
+        </thead>
+        @foreach (Prescription i in Model)
         {
-        <div class="alert alert-@TempData[" MsgType"]">
-            @TempData["Message"]
-        </div>
-        }
-
-        <span style="color:red">@TempData["Msg"]</span>
-        <table class="table table-bordered table-condensed table-hover table-striped">
-            <thead>
-                <tr>
-                    <th scope="col" width="20%">Prescription ID</th>
-                    <th scope="col" width="20%">Patient ID</th>
-                    <th scope="col" width="20%">Medicine ID</th>
-                    <th scope="col" width="20%">Dosage ID</th>
-                    <th scope="col" width="20%">Name</th>
-                    <th scope="col" width="20%">Case Notes</th>
-                </tr>
-            </thead>
-
-            @foreach (Prescription i in Model)
-            {
             <tbody>
                 <tr scope="row">
                     <td width="20%">@i.Prescription_id</td>
@@ -54,23 +57,29 @@
                     <td width="20%">
                         @foreach (Patient x in patients)
                         {
-                        if (x.Patient_id.Equals(i.Patient_id))
-                        {
-                        <text>@x.Name</text>
-                        }
+                            if (x.Patient_id.Equals(i.Patient_id))
+                            {
+                                <text>@x.Name</text>
+                            }
                         }
                     </td>
                     <td width="20%">
-                        <form asp-controller="Hospital"
-                              asp-action="ModifyCaseNotes"
-                              method="post">
-                            <input type="text" name="prescriptionid" class="form-control" value="@i.Prescription_id" hidden="hidden" />
-                            <textarea name="text" class="summernote" id="contents" title="Contents">@i.Case_notes</textarea><br />
+                        <input type="text" name="prescriptionid" class="form-control" value="@i.Prescription_id" hidden="hidden" />
+                        <textarea name="text" class="summernote" id="contents" title="Contents">@i.Case_notes</textarea><br />
 
-                            <input type="submit" class="btn btn-primary" value="Save Notes" style="float: right">
-                        </form>
+                        <div class="btn-group btn-group-lg" role="group" aria-label="Large button group" style="float: right">
+
+                            <input type="submit" class="btn btn-primary" value="Save Notes">
+                            <button id="btnGroupDrop1" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                More
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+                                <a class="dropdown-item" asp-action="EditPrescription/@i.Prescription_id">Edit Prescription</a>
+                            </div>
+                        </div>
                     </td>
                 </tr>
             </tbody>
-            }
-        </table>
+        }
+    </table>
+</form>

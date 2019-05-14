@@ -1,0 +1,69 @@
+﻿@{
+    var medicines = DBUtl.GetList<Medicine>(
+                                     "SELECT * FROM medicine");
+    var dosages = DBUtl.GetList<Dosage>(
+                                     "SELECT * FROM dosage");
+    var prescriptions = DBUtl.GetList<Prescription>(
+                                     "SELECT * FROM prescription");
+    int queue = (int)ViewData["QueueNumber"];
+    int patient = (int)ViewData["PatientNumber"];
+    int prescription = (int)ViewData["PrescriptionNumber"];
+    string name = ViewData["Name"].ToString();
+}
+<form asp-controller="Hospital"
+      asp-action="PackForDispense"
+      method="post">
+    <table class="table table-bordered table-condensed table-hover table-striped">
+        <thead>
+            <tr>
+                <th scope="col" width="20%">Queue ID</th>
+                <th scope="col" width="20%">Patient ID</th>
+                <th scope="col" width="20%">Prescription ID</th>
+                <th scope="col" width="20%">Patient Name</th>
+                <th scope="col" width="20%">Medicine Name</th>
+                <th scope="col" width="20%">Dosage Instructions</th>
+                <th scope="col" width="20%">Dosage Quantity</th>
+                <th scope="col" width="20%">Action</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr scope="row">
+                <td width="20%"><input type="text" name="queueid" class="form-control" value="@queue" readonly="readonly" /></td>
+                <td width="20%">@patient</td>
+                <td width="20%"><input type="text" name="prescriptionid" class="form-control" value="@prescription" readonly="readonly" /></td>
+                <td width="20%"><input type="text" name="patientname" class="form-control" value="@name" readonly="readonly" /></td>
+                <td width="20%">
+                    @foreach (Medicine med in medicines)
+                    {
+                        if (med.Medicine_id.Equals(ViewData["MedicineNumber"]))
+                        {
+                            <input type="text" name="medicinename" class="form-control" value="@med.Medicine_name" readonly="readonly" />
+                        }
+                    }
+                </td>
+                <td width="20%">
+                    @foreach (Dosage dos in dosages)
+                    {
+                        if (dos.Dosage_id.Equals(ViewData["DosageNumber"]))
+                        {
+                            <input type="text" name="dosage" class="form-control" value="@dos.Short_form_description" readonly="readonly" />
+                        }
+                    }
+                </td>
+                <td width="20%">
+                    @foreach (Prescription prep in prescriptions)
+                    {
+                        if (prep.Prescription_id.Equals(ViewData["PrescriptionNumber"]))
+                        {
+                            <input type="text" name="dosageqty" class="form-control" value="@prep.Dosage_quantity" readonly="readonly" />
+                        }
+                    }
+                </td>
+                <td width="20%">
+                    <input type="submit" class="btn btn-primary" value="Proceed">
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</form>

@@ -1,7 +1,6 @@
 ﻿@model Queue
 @{
     int queue = (int)ViewData["QueueNumber"];
-    int patient = (int)ViewData["PatientNumber"];
 }
 
 <body>
@@ -12,12 +11,11 @@
                 <div class="card-body">
                     <h5 class="card-title text-left">Queue Number is:</h5>
                     <h1 class="card-title">
-                        <input asp-for="Patient_id" class="form-control" value="@patient" hidden="hidden" />
                         <input asp-for="Queue_id" class="form-control" value="@queue" readonly="readonly" />
                     </h1>
                     <p class="card-text text-left">*Queue no. may not be called in running sequence.</p>
                     <form asp-controller="Hospital"
-                          asp-action="AddPrescription"
+                          asp-action="PackStatus"
                           method="get">
                         <div class="form-group row">
                             <div class="offset-sm-3 col-sm-6">

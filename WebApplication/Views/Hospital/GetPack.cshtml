@@ -1,0 +1,35 @@
+﻿@model Queue
+@{
+    int queue = (int)ViewData["QueueNumber"];
+    int medicine = (int)ViewData["Medicine"];
+    int qty = (int)ViewData["Qty"];
+}
+
+    <body>
+        <h2><span style="color:white; visibility:hidden">Test</span></h2>
+        <form asp-controller="Hospital"
+              asp-action="Dispense"
+              method="post">
+            <div class="container">
+                <center>
+                    <div class="card" style="width:350px; height:220px">
+                        <div class="card-body">
+                            <h5 class="card-title text-left">Queue Number is:</h5>
+                            <h1 class="card-title">
+                                @queue
+                                <input type="text" name="medicine" class="form-control" value="@medicine" hidden="hidden" />
+                                <input type="text" name="qty" class="form-control" value="@qty" hidden="hidden" />
+                            </h1>
+                            <p class="card-text text-left">*Queue no. may not be called in running sequence.</p>
+                            <div class="form-group row">
+                                <div class="offset-sm-3 col-sm-6">
+                                    <input type="submit" value="Proceed" class="btn btn-primary" />
+                                </div>
+                            </div>
+                            <br />
+                        </div>
+                    </div>
+                </center>
+            </div>
+        </form>
+    </body>
