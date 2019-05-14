@@ -540,7 +540,7 @@ UPDATE queue SET Serve_status_id = '7' WHERE Queue_id = (SELECT MIN(Queue_id) FR
             return View();
         }
 
-        [HttpPost]
+        [HttpPost] // To properly dispense medicine and update quantity
         public IActionResult Dispense()
         {
             string medicine = HttpContext.Request.Form["medicine"];
@@ -563,6 +563,7 @@ UPDATE queue SET Serve_status_id = '7' WHERE Queue_id = (SELECT MIN(Queue_id) FR
             }
         }
 
+        // Display queue number based on first come first serve (Payment)
         public IActionResult GetPayment()
         {
             var queues = DBUtl.GetTable(
