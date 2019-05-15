@@ -3,6 +3,7 @@
     int queue = (int)ViewData["QueueNumber"];
     int medicine = (int)ViewData["Medicine"];
     int qty = (int)ViewData["Qty"];
+    int patient = (int)ViewData["PatientNumber"];
 }
 
     <body>
@@ -16,7 +17,8 @@
                         <div class="card-body">
                             <h5 class="card-title text-left">Queue Number is:</h5>
                             <h1 class="card-title">
-                                @queue
+                                <input type="text" name="queue" class="form-control" value="@queue" readonly="readonly" />
+                                <input type="text" name="patient" class="form-control" value="@patient" hidden="hidden" />
                                 <input type="text" name="medicine" class="form-control" value="@medicine" hidden="hidden" />
                                 <input type="text" name="qty" class="form-control" value="@qty" hidden="hidden" />
                             </h1>

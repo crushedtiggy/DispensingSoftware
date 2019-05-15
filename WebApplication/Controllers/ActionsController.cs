@@ -69,8 +69,10 @@ INSERT INTO patient_archive
         public IActionResult CleanAll()
         {
             string sql = @"
+DELETE FROM bill_transaction;
+
 INSERT INTO prescription_archive  
-    SELECT Prescription_id, Patient_id, Medicine_id, Dosage_id, Doctor_mcr, Doctor_name, Practicing_place_name, Practicing_address, Booking_appointment, Case_notes, Duration, Dosage_quantity, Instructions, Total_price
+    SELECT Prescription_id, Patient_id, Medicine_id, Dosage_id, Doctor_mcr, Doctor_name, Practicing_place_name, Practicing_address, Booking_appointment, Case_notes, Duration, Dosage_quantity, Instructions
     FROM prescription;  
                             DELETE FROM prescription;
                             DELETE FROM queue;
@@ -82,7 +84,8 @@ INSERT INTO patient_archive
                             DELETE FROM category2;
                             DELETE FROM category3;
                             DELETE FROM category4;
-                            DELETE FROM checkflag;";
+                            DELETE FROM checkflag;
+							";
             if (DBUtl.ExecSQL(sql) == 1)
             {
                 TempData["Message"] = "Reset All Successful";
