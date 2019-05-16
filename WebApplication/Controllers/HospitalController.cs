@@ -54,7 +54,7 @@ namespace WebApplication.Controllers
         public IActionResult AddPrescription()
         {
             List<Queue> queues = DBUtl.GetList<Queue>(
-                                    "SELECT Patient_id FROM queue WHERE Serve_status_id = '1' ORDER BY Queue_datetime");
+                                    " SELECT TOP 1 Queue_id, Patient_id, Serve_status_id, Queue_category_id, Queue_datetime, Waiting_minutes FROM queue ORDER BY CASE WHEN Queue_category_id = '1' THEN Queue_category_id ELSE Queue_datetime END, Queue_category_id, CASE WHEN Waiting_minutes > 60 AND Serve_status_id = '1' THEN Waiting_minutes ELSE Queue_datetime END; ");
             ViewData["PatientNumber"] = queues.FirstOrDefault().Patient_id;
             var medicines = DBUtl.GetList<Medicine>(
                                      "SELECT * FROM medicine ORDER BY Medicine_id");
@@ -127,17 +127,7 @@ DELETE from patientcheck WITH (TABLOCKX) WHERE Check_id = (SELECT MIN(Check_id) 
         [HttpPost]
         public IActionResult AddPrescription(Prescription prescription)
         {
-            List<Patient> patients = DBUtl.GetList<Patient>("SELECT Patient_id, Queue_id FROM patient ORDER BY Patient_id");
-
-            int queueNo = 0;
-
-            foreach (Patient i in patients)
-            {
-                if (i.Patient_id == prescription.Patient_id)
-                {
-                    queueNo = i.Queue_id;
-                }
-            }
+            List<Queue> queues = DBUtl.GetList<Queue>(" SELECT TOP 1 Queue_id, Patient_id, Serve_status_id, Queue_category_id, Queue_datetime, Waiting_minutes FROM queue ORDER BY CASE WHEN Queue_category_id = '1' THEN Queue_category_id ELSE Queue_datetime END, Queue_category_id, CASE WHEN Waiting_minutes > 60 AND Serve_status_id = '1' THEN Waiting_minutes ELSE Queue_datetime END; ");
 
             if (!ModelState.IsValid)
             {
@@ -155,7 +145,7 @@ DELETE from patientcheck WITH (TABLOCKX) WHERE Check_id = (SELECT MIN(Check_id) 
 
 UPDATE queue WITH (TABLOCKX) SET Serve_status_id = '2' WHERE Patient_id = '{12}' AND Queue_id = '{13}'";
 
-                if (DBUtl.ExecSQL(sql, prescription.Patient_id, prescription.Medicine_id, prescription.Dosage_id, prescription.Doctor_mcr, prescription.Doctor_name, prescription.Practicing_place_name, prescription.Practicing_address, $"{prescription.Booking_appointment:yyyy-MM-dd HH:mm}", prescription.Case_notes, prescription.Duration, prescription.Dosage_quantity, prescription.Instructions, prescription.Patient_id, queueNo) == 1)
+                if (DBUtl.ExecSQL(sql, prescription.Patient_id, prescription.Medicine_id, prescription.Dosage_id, prescription.Doctor_mcr, prescription.Doctor_name, prescription.Practicing_place_name, prescription.Practicing_address, $"{prescription.Booking_appointment:yyyy-MM-dd HH:mm}", prescription.Case_notes, prescription.Duration, prescription.Dosage_quantity, prescription.Instructions, queues.FirstOrDefault().Patient_id, queues.FirstOrDefault().Queue_id) == 1)
                 {
                     TempData["Message"] = "Prescription Added";
                     TempData["MsgType"] = "success";
@@ -223,7 +213,7 @@ UPDATE queue WITH (TABLOCKX) SET Serve_status_id = '2' WHERE Patient_id = '{12}'
         public IActionResult GetQueueNumber()
         {
             var queues = DBUtl.GetTable(
-                                    "SELECT * FROM queue WHERE Serve_status_id = '1' ORDER BY (CASE WHEN Queue_category_id = '1' THEN Queue_category_id ELSE Queue_datetime END);");
+                                    "SELECT TOP 1 Queue_id, Patient_id, Serve_status_id, Queue_category_id, Queue_datetime, Waiting_minutes FROM queue WHERE queue.serve_status_id = '1' ORDER BY CASE WHEN Queue_category_id = '1' THEN Queue_category_id ELSE Queue_datetime END, Queue_category_id, CASE WHEN Waiting_minutes > 60 AND Serve_status_id = '1' THEN Waiting_minutes ELSE Queue_datetime END; ");
             if (queues.Rows.Count == 0)
             {
                 TempData["Message"] = "No queue number available";
@@ -274,7 +264,7 @@ UPDATE queue WITH (TABLOCKX) SET Serve_status_id = '2' WHERE Patient_id = '{12}'
         {
             string subtotal = HttpContext.Request.Form["subtotal"].ToString();
 
-            string update = @"UPDATE WITH (TABLOCKX) bill_transaction SET Payment_type = '{0}', Subtotal = '{1}', Payment_datetime = GETDATE() WHERE Prescription_id = '{2}' AND Bill_transaction_id = '{3}' AND Queue_id = '{4}' ;
+            string update = @"UPDATE bill_transaction WITH (TABLOCKX) SET Payment_type = '{0}', Subtotal = '{1}', Payment_datetime = GETDATE() WHERE Prescription_id = '{2}' AND Bill_transaction_id = '{3}' AND Queue_id = '{4}' ;
 
 UPDATE queue WITH (TABLOCKX) SET Serve_status_id = '5' WHERE Queue_id = '{4}' AND Serve_status_id = '4';";
             if (DBUtl.ExecSQL(update, bill_Transaction.Payment_type, Double.Parse(subtotal), bill_Transaction.Prescription_id, bill_Transaction.Bill_transaction_id, bill_Transaction.Queue_id) == 1)
@@ -496,7 +486,7 @@ UPDATE queue WITH (TABLOCKX) SET Serve_status_id = '5' WHERE Queue_id = '{4}' AN
 
             string insert = @"INSERT INTO bill_transaction WITH (TABLOCKX) (Prescription_id, Queue_id) VALUES('{0}','{1}');
 
-UPDATE queue WITH (TABLOCKX) SET Serve_status_id = '7' WHERE Queue_id = '{1}' AND Serve_status_id = '3');";
+UPDATE queue WITH (TABLOCKX) SET Serve_status_id = '7' WHERE Queue_id = '{1}' AND Serve_status_id = '3';";
             if (DBUtl.ExecSQL(insert, prescription, queue) == 1)
             {
                 TempData["Message"] = "Packed and ready for dispense!";
