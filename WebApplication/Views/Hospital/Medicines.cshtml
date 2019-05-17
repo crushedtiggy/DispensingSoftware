@@ -19,7 +19,13 @@
 </script>
 
 <h2>Medicines</h2>
-
+<button id="btnGroupDrop1" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    More
+</button>
+<div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+    <a class="dropdown-item" asp-action="Categories">View Categories</a>
+    <a class="dropdown-item" asp-action="Subcategories">View Subcategories</a>
+</div><br />
 @if (TempData["Message"] != null)
 {
     <div class="alert alert-@TempData[" MsgType"]">

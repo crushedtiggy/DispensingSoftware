@@ -36,33 +36,8 @@
                             <li class="nav-item active">
                                 <a class="nav-link" asp-action="Index" style="color:azure">Home <span class="sr-only">(current)</span></a>
                             </li>
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" asp-action="Patients" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color:azure">
-                                    Patient
-                                </a>
-                                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                    <a class="dropdown-item" asp-action="Patients">View Patients</a>
-                                    <a class="dropdown-item" asp-action="AddPatient">Add Patient</a>
-                                </div>
-                            </li>
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" asp-action="Prescriptions" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color:azure">
-                                    Prescription
-                                </a>
-                                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                    <a class="dropdown-item" asp-action="Prescriptions">View Prescriptions</a>
-                                    <a class="dropdown-item" asp-action="GetQueueNumber">Retrieve Queue Number</a>
-                                </div>
-                            </li>
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" asp-action="Medicines" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color:azure">
-                                    Medicine Inventory
-                                </a>
-                                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                    <a class="dropdown-item" asp-action="Medicines">View Medicines</a>
-                                    <a class="dropdown-item" asp-action="Categories">View Categories</a>
-                                    <a class="dropdown-item" asp-action="Subcategories">View Subcategories</a>
-                                </div>
+                            <li class="nav-item active">
+                                <a class="nav-link" asp-action="CheckDispensaryStatus" style="color:azure">Check Dispensary Status</a>
                             </li>
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" asp-action="Medicines" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color:azure">

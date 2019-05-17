@@ -54,7 +54,7 @@ namespace WebApplication.Controllers
         public IActionResult AddPrescription()
         {
             List<Queue> queues = DBUtl.GetList<Queue>(
-                                    " SELECT TOP 1 Queue_id, Patient_id, Serve_status_id, Queue_category_id, Queue_datetime, Waiting_minutes FROM queue ORDER BY CASE WHEN Queue_category_id = '1' THEN Queue_category_id ELSE Queue_datetime END, Queue_category_id, CASE WHEN Waiting_minutes > 60 AND Serve_status_id = '1' THEN Waiting_minutes ELSE Queue_datetime END; ");
+                                    " SELECT TOP 1 Queue_id, Patient_id, Serve_status_id, Queue_category_id, Queue_datetime, Waiting_minutes FROM queue WHERE queue.serve_status_id = '1' ORDER BY CASE WHEN Queue_category_id = '1' THEN Queue_category_id ELSE Queue_datetime END, Queue_category_id, CASE WHEN Waiting_minutes > 60 AND Serve_status_id = '1' THEN Waiting_minutes ELSE Queue_datetime END; ");
             ViewData["PatientNumber"] = queues.FirstOrDefault().Patient_id;
             var medicines = DBUtl.GetList<Medicine>(
                                      "SELECT * FROM medicine ORDER BY Medicine_id");
@@ -127,7 +127,7 @@ DELETE from patientcheck WITH (TABLOCKX) WHERE Check_id = (SELECT MIN(Check_id) 
         [HttpPost]
         public IActionResult AddPrescription(Prescription prescription)
         {
-            List<Queue> queues = DBUtl.GetList<Queue>(" SELECT TOP 1 Queue_id, Patient_id, Serve_status_id, Queue_category_id, Queue_datetime, Waiting_minutes FROM queue ORDER BY CASE WHEN Queue_category_id = '1' THEN Queue_category_id ELSE Queue_datetime END, Queue_category_id, CASE WHEN Waiting_minutes > 60 AND Serve_status_id = '1' THEN Waiting_minutes ELSE Queue_datetime END; ");
+            List<Queue> queues = DBUtl.GetList<Queue>(" SELECT TOP 1 Queue_id, Patient_id, Serve_status_id, Queue_category_id, Queue_datetime, Waiting_minutes FROM queue WHERE queue.serve_status_id = '1' ORDER BY CASE WHEN Queue_category_id = '1' THEN Queue_category_id ELSE Queue_datetime END, Queue_category_id, CASE WHEN Waiting_minutes > 60 AND Serve_status_id = '1' THEN Waiting_minutes ELSE Queue_datetime END; ");
 
             if (!ModelState.IsValid)
             {
@@ -149,13 +149,15 @@ UPDATE queue WITH (TABLOCKX) SET Serve_status_id = '2' WHERE Patient_id = '{12}'
                 {
                     TempData["Message"] = "Prescription Added";
                     TempData["MsgType"] = "success";
+                    return RedirectToAction("Index");
+
                 }
                 else
                 {
                     TempData["Message"] = DBUtl.DB_Message;
                     TempData["MsgType"] = "danger";
+                    return View("Index");
                 }
-                return RedirectToAction("Prescriptions");
             }
         }
 
@@ -561,6 +563,50 @@ UPDATE queue WITH (TABLOCKX) SET Serve_status_id = '7' WHERE Queue_id = '{1}' AN
             int queue = (int)queues.Rows[0]["Queue_id"];
             ViewData["QueueNumber"] = queue;
             return View();
+        }
+
+        // To check status of patient
+        public IActionResult CheckDispensaryStatus()
+        {
+            return View();
+        }
+
+        public IActionResult ShowDispensaryStatus()
+        {
+            return View();
+        }
+
+        // To return result of the patient which user has requested to check
+        [HttpPost]
+        public IActionResult ShowDispensaryStatus(Queue queue)
+        {
+            if (!ModelState.IsValid)
+            {
+                ViewData["Message"] = DBUtl.DB_Message;
+                ViewData["MsgType"] = "warning";
+                return View("CheckDispensaryStatus");
+            }
+            else
+            {
+
+                var search = DBUtl.GetTable("SELECT Name, NRIC, Serve_status_description FROM patient, queue, serve_status WHERE queue.Queue_id = patient.Queue_id AND queue.Serve_status_id = serve_status.Serve_status_id AND queue.Queue_id = '{0}';", queue.Queue_id);
+
+                if (search.Rows.Count == 1)
+                {
+                    ViewData["Name"] = search.Rows[0]["Name"].ToString();
+                    ViewData["NRIC"] = search.Rows[0]["NRIC"].ToString();
+                    ViewData["Status"] = search.Rows[0]["Serve_status_description"].ToString();
+                    TempData["Message"] = String.Format("{0} search result found", search.Rows.Count);
+                    TempData["MsgType"] = "success";
+                    return View();
+                }
+                else
+                {
+                    TempData["Message"] = "Search result not found";
+                    TempData["MsgType"] = "danger";
+                    return View("CheckDispensaryStatus");
+                }
+            }
         }
     }
 }
