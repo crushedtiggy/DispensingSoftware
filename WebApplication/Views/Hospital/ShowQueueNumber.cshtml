@@ -1,7 +1,13 @@
-﻿@{ 
+﻿@{
     int patient = (int)ViewData["QueueNumber"];
 }
 
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-@TempData["MsgType"]">
+        @TempData["Message"]
+    </div>
+}
 <body>
     <h2><span style="color:white; visibility:hidden">Test</span></h2>
     <div class="container">
