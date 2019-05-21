@@ -8,7 +8,7 @@ namespace WebApplication.Models
 {
     public class LoginUser
     {
-        [Required(ErrorMessage = "User ID cannot be empty!")]
+        [Required(ErrorMessage = "Username cannot be empty!")]
         public string Login_name { get; set; }
 
         [Required(ErrorMessage = "Empty password not allowed!")]

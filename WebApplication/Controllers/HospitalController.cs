@@ -4,7 +4,9 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Data.SqlTypes;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using WebApplication.Models;
@@ -17,11 +19,18 @@ namespace WebApplication.Controllers
     {
         // GET: /<controller>/
 
+        [Authorize]
         public IActionResult Index()
         {
-            return View();
+            string userid = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            List<User> model = DBUtl.GetList<User>(
+                                                 @"SELECT * FROM [user] 
+                                                WHERE User_id = {0}",
+                                                       userid);
+            return View(model);
         }
 
+        [Authorize]
         public IActionResult Patients()
         {
             List<Patient> model = DBUtl.GetList<Patient>(
@@ -29,6 +38,7 @@ namespace WebApplication.Controllers
             return View(model);
         }
 
+        [Authorize]
         public IActionResult Medicines()
         {
             List<Medicine> model = DBUtl.GetList<Medicine>(
@@ -36,6 +46,7 @@ namespace WebApplication.Controllers
             return View(model);
         }
 
+        [Authorize]
         public IActionResult Categories()
         {
             List<Category> model = DBUtl.GetList<Category>(
@@ -43,6 +54,7 @@ namespace WebApplication.Controllers
             return View(model);
         }
 
+        [Authorize]
         public IActionResult Subcategories()
         {
             List<Subcategory> model = DBUtl.GetList<Subcategory>(
@@ -50,6 +62,7 @@ namespace WebApplication.Controllers
             return View(model);
         }
 
+        [Authorize]
         [HttpGet]
         public IActionResult AddPrescription()
         {
@@ -66,7 +79,7 @@ namespace WebApplication.Controllers
             return View();
         }
 
-
+        [Authorize]
         public IActionResult Prescriptions()
         {
             List<Prescription> model = DBUtl.GetList<Prescription>(
@@ -81,6 +94,7 @@ namespace WebApplication.Controllers
             return View();
         }
 
+        [Authorize]
         [HttpPost]
         public IActionResult AddPatient(Patient newPatient)
         {
@@ -127,19 +141,19 @@ IF @@TRANCOUNT > 0
                                                        newPatient.Gender, $"{newPatient.Date_of_birth:yyyy-MM-dd}", newPatient.Race,
                                                        newPatient.Height, newPatient.Weight, newPatient.Allergy, newPatient.Smoke, newPatient.Alcohol, newPatient.Has_travel, newPatient.Has_flu, newPatient.Has_following_symptoms, newPatient.Address, newPatient.Postal_code, newPatient.Phone_no, newPatient.Email, newPatient.Remarks, newPatient.Is_Urgent, queueNo, 1, GetQueueCategoryId(newPatient), GetQueueCategoryId(newPatient), queueNo, "admin") == 1)
                 {
-                    TempData["Message"] = "Patient Added";
-                    TempData["MsgType"] = "success";
+                    ViewData["QueueNumber"] = queueNo;
+                    return View("ShowQueueNumber");
                 }
                 else
                 {
                     TempData["Message"] = DBUtl.DB_Message;
                     TempData["MsgType"] = "danger";
+                    return View();
                 }
-                ViewData["QueueNumber"] = queueNo;
-                return View("ShowQueueNumber");
             }
         }
 
+        [Authorize]
         [HttpPost]
         public IActionResult AddPrescription(Prescription prescription)
         {
@@ -177,6 +191,7 @@ UPDATE queue WITH (TABLOCKX) SET Serve_status_id = '2' WHERE Patient_id = '{12}'
             }
         }
 
+        [Authorize]
         public IActionResult EditPrescription(String id)
         {
             string sql = "SELECT * FROM Prescription WHERE Prescription_id={0}";
@@ -222,12 +237,14 @@ UPDATE queue WITH (TABLOCKX) SET Serve_status_id = '2' WHERE Patient_id = '{12}'
         }
 
         // Show queue number after patient is registered (Patient)
+        [Authorize]
         public IActionResult ShowQueueNumber()
         {
             return View();
         }
 
         // Display queue number based on first come first serve (Prescription)
+        [Authorize]
         public IActionResult GetQueueNumber()
         {
             var queues = DBUtl.GetTable(
@@ -245,6 +262,7 @@ UPDATE queue WITH (TABLOCKX) SET Serve_status_id = '2' WHERE Patient_id = '{12}'
             return View();
         }
 
+        [Authorize]
         [HttpGet]
         public IActionResult DoPayment()
         {
@@ -277,6 +295,7 @@ UPDATE queue WITH (TABLOCKX) SET Serve_status_id = '2' WHERE Patient_id = '{12}'
             }
         }
 
+        [Authorize]
         [HttpPost]
         public IActionResult DoPayment(Bill_transaction bill_Transaction)
         {
@@ -386,6 +405,7 @@ UPDATE queue WITH (TABLOCKX) SET Serve_status_id = '5' WHERE Queue_id = '{4}' AN
             return queueNo;
         }
 
+        [Authorize]
         [HttpPost]
         public IActionResult ModifyCaseNotes()
         {
@@ -406,6 +426,7 @@ UPDATE queue WITH (TABLOCKX) SET Serve_status_id = '5' WHERE Queue_id = '{4}' AN
             }
         }
 
+        [Authorize]
         [HttpPost]
         public IActionResult ModifyMedicineName()
         {
@@ -454,6 +475,7 @@ UPDATE queue WITH (TABLOCKX) SET Serve_status_id = '5' WHERE Queue_id = '{4}' AN
             }
         }
 
+        [Authorize]
         [HttpGet] // display the dispensing details before confirming dispensed
         public IActionResult PackStatus()
         {
@@ -496,6 +518,7 @@ UPDATE queue WITH (TABLOCKX) SET Serve_status_id = '5' WHERE Queue_id = '{4}' AN
             return View();
         }
 
+        [Authorize]
         [HttpPost] // pack medicines based on prescription before proceeding to dispenser system
         public IActionResult PackForDispense()
         {
@@ -520,6 +543,7 @@ UPDATE queue WITH (TABLOCKX) SET Serve_status_id = '7' WHERE Queue_id = '{1}' AN
         }
 
         // Display queue number based on first come first serve (Dispenser System)
+        [Authorize]
         public IActionResult GetPack()
         {
             var queues = DBUtl.GetTable(
@@ -542,6 +566,7 @@ UPDATE queue WITH (TABLOCKX) SET Serve_status_id = '7' WHERE Queue_id = '{1}' AN
         }
 
         [HttpPost] // To properly dispense medicine and update quantity
+        [Authorize]
         public IActionResult Dispense()
         {
             string medicine = HttpContext.Request.Form["medicine"];
@@ -566,6 +591,7 @@ UPDATE queue WITH (TABLOCKX) SET Serve_status_id = '7' WHERE Queue_id = '{1}' AN
         }
 
         // Display queue number based on first come first serve (Payment)
+        [Authorize]
         public IActionResult GetPayment()
         {
             var queues = DBUtl.GetTable(
@@ -582,17 +608,20 @@ UPDATE queue WITH (TABLOCKX) SET Serve_status_id = '7' WHERE Queue_id = '{1}' AN
         }
 
         // To check status of patient
+        [Authorize]
         public IActionResult CheckDispensaryStatus()
         {
             return View();
         }
 
+        [Authorize]
         public IActionResult ShowDispensaryStatus()
         {
             return View();
         }
 
         // To return result of the patient which user has requested to check
+        [Authorize]
         [HttpPost]
         public IActionResult ShowDispensaryStatus(Queue queue)
         {

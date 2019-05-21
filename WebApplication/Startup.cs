@@ -24,9 +24,8 @@ namespace WebApplication //make sure you type this correctly
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
-            // adding authentication handler for SingRoom using authentication scheme "SingRoom"
             services
-               .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+               .AddAuthentication("Hospital")
                .AddCookie("Hospital",
                   options =>
                   {
