@@ -107,39 +107,19 @@ namespace WebApplication.Controllers
             else
             {
                 int queueNo = CheckQueueNumber(GetQueueCategoryId(newPatient));
-                string sql = @"BEGIN TRANSACTION;  
-  
-BEGIN TRY  
-    -- Generate a constraint violation error.  
-    SET TRANSACTION ISOLATION LEVEL REPEATABLE READ;  
+                string sql = @"
     INSERT INTO patientcheck (Name, Nric, Gender, Date_of_birth, Race, Height, Weight, Allergy, Smoke, Alcohol, Has_travel, Has_flu, Has_following_symptoms, Address, Postal_code, Phone_no, Email, Remarks, Registered_datetime, Is_Urgent) VALUES('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', '{6}', '{7}', '{8}', '{9}', '{10}', '{11}', '{12}', '{13}', '{14}', '{15}', '{16}', '{17}', GETDATE(), '{18}');
     INSERT INTO category{42} (Queue_no, Created_by) VALUES ('{43}', '{44}');
     INSERT INTO patient (Queue_id, Name, Nric, Gender, Date_of_birth, Race, Height, Weight, Allergy, Smoke, Alcohol, Has_travel, Has_flu, Has_following_symptoms, Address, Postal_code, Phone_no, Email, Remarks, Registered_datetime, Is_Urgent)
                                     VALUES ('{19}', '{20}', '{21}', '{22}', '{23}', '{24}', '{25}', '{26}', '{27}', '{28}', '{29}', '{30}', '{31}', '{32}', '{33}', '{34}', '{35}', '{36}', '{37}', GETDATE(), '{38}');
     INSERT INTO queue (Queue_id, Patient_id, Serve_status_id, Queue_category_id, Queue_datetime) VALUES ('{39}', (SELECT Patient_id FROM patient WHERE Patient_id = @@IDENTITY), '{40}', '{41}', GETDATE());
-    DELETE from patientcheck WHERE Check_id = (SELECT MIN(Check_id) FROM patientcheck);
-END TRY  
-BEGIN CATCH  
-    SELECT   
-        ERROR_NUMBER() AS ErrorNumber  
-        ,ERROR_SEVERITY() AS ErrorSeverity  
-        ,ERROR_STATE() AS ErrorState  
-        ,ERROR_PROCEDURE() AS ErrorProcedure  
-        ,ERROR_LINE() AS ErrorLine  
-        ,ERROR_MESSAGE() AS ErrorMessage;  
-  
-    IF @@TRANCOUNT > 0  
-        ROLLBACK TRANSACTION;  
-END CATCH;  
-  
-IF @@TRANCOUNT > 0  
-    COMMIT TRANSACTION;";
+    DELETE from patientcheck WHERE Check_id = (SELECT MIN(Check_id) FROM patientcheck);";
 
                 if (DBUtl.ExecSQL(sql, newPatient.Name, newPatient.Nric,
                                                        newPatient.Gender, $"{newPatient.Date_of_birth:yyyy-MM-dd}", newPatient.Race,
                                                        newPatient.Height, newPatient.Weight, newPatient.Allergy, newPatient.Smoke, newPatient.Alcohol, newPatient.Has_travel, newPatient.Has_flu, newPatient.Has_following_symptoms, newPatient.Address, newPatient.Postal_code, newPatient.Phone_no, newPatient.Email, newPatient.Remarks, newPatient.Is_Urgent, queueNo, newPatient.Name, newPatient.Nric,
                                                        newPatient.Gender, $"{newPatient.Date_of_birth:yyyy-MM-dd}", newPatient.Race,
-                                                       newPatient.Height, newPatient.Weight, newPatient.Allergy, newPatient.Smoke, newPatient.Alcohol, newPatient.Has_travel, newPatient.Has_flu, newPatient.Has_following_symptoms, newPatient.Address, newPatient.Postal_code, newPatient.Phone_no, newPatient.Email, newPatient.Remarks, newPatient.Is_Urgent, queueNo, 1, GetQueueCategoryId(newPatient), GetQueueCategoryId(newPatient), queueNo, "admin") == 1)
+                                                       newPatient.Height, newPatient.Weight, newPatient.Allergy, newPatient.Smoke, newPatient.Alcohol, newPatient.Has_travel, newPatient.Has_flu, newPatient.Has_following_symptoms, newPatient.Address, newPatient.Postal_code, newPatient.Phone_no, newPatient.Email, newPatient.Remarks, newPatient.Is_Urgent, queueNo, 1, GetQueueCategoryId(newPatient), GetQueueCategoryId(newPatient), queueNo, User.Identity.Name) > 0)
                 {
                     ViewData["QueueNumber"] = queueNo;
                     return View("ShowQueueNumber");
@@ -148,7 +128,7 @@ IF @@TRANCOUNT > 0
                 {
                     TempData["Message"] = DBUtl.DB_Message;
                     TempData["MsgType"] = "danger";
-                    return View();
+                    return View("Index");
                 }
             }
         }
