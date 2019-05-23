@@ -1,0 +1,65 @@
+﻿@model DataTable
+
+<div class="form-group row">
+    <div class="offset-sm-0 col-sm-6 ">
+        <h2>Check Waiting Duration</h2>
+    </div>
+</div>
+
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-@TempData["MsgType"]">
+        @TempData["Message"]
+    </div>
+}
+
+<div class="form-group row">
+    <div class="col-sm-6">
+        <a class="btn btn-primary" href="/Hospital/CheckWaitingDuration" role="button">Check Another Waiting Minutes</a>
+    </div>
+</div>
+@if (Model != null)
+{
+    <table class="table table-bordered table-condensed table-hover table-striped">
+        <thead>
+            <tr>
+                <th scope="col" width="20%">Patient Name</th>
+                <th scope="col" width="20%">NRIC</th>
+                <th scope="col" width="20%">Dispense Status</th>
+                <th scope="col" width="20%">Waiting Duration</th>
+            </tr>
+        </thead>
+        @for (int row = 0; row < Model.Rows.Count; row++)
+        {
+            <tbody>
+                @if ((int)Model.Rows[row][3] <= 60 && @Model.Rows[row][2].ToString().Equals("registered"))
+                {
+                    <tr scope="row" style="background-color:springgreen; color:black">
+                        <td width="20%">@Model.Rows[row][0]</td>
+                        <td width="20%">@Model.Rows[row][1]</td>
+                        <td width="20%">@Model.Rows[row][2]</td>
+                        <td width="20%">@Model.Rows[row][3]</td>
+                    </tr>
+                }
+                else if ((int)Model.Rows[row][3] >= 60 && @Model.Rows[row][2].ToString().Equals("registered"))
+                {
+                    <tr scope="row" style="background-color:red; color:snow">
+                        <td width="20%">@Model.Rows[row][0]</td>
+                        <td width="20%">@Model.Rows[row][1]</td>
+                        <td width="20%">@Model.Rows[row][2]</td>
+                        <td width="20%">@Model.Rows[row][3]</td>
+                    </tr>
+                }
+                else
+                {
+                    <tr scope="row">
+                        <td width="20%">@Model.Rows[row][0]</td>
+                        <td width="20%">@Model.Rows[row][1]</td>
+                        <td width="20%">@Model.Rows[row][2]</td>
+                        <td width="20%">@Model.Rows[row][3]</td>
+                    </tr>
+                }
+            </tbody>
+        }
+    </table>
+}

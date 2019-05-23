@@ -42,14 +42,20 @@
                             <li class="nav-item active">
                                 <a class="nav-link" asp-action="Index" style="color:azure">Home <span class="sr-only">(current)</span></a>
                             </li>
-                            <li class="nav-item active">
-                                <a class="nav-link" asp-action="CheckDispensaryStatus" style="color:azure">Check Dispensary Status</a>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color:azure">
+                                    Check
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <a class="dropdown-item" asp-action="CheckDispensaryStatus">Check Dispensary Status</a>
+                                    <a class="dropdown-item" asp-action="CheckWaitingDuration">Check Waiting Duration</a>
+                                </div>
                             </li>
                             <li class="nav-item active">
                                 <a class="nav-link" asp-action="QueueCategories" style="color:azure">Queue Categories Classification</a>
                             </li>
                             <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" asp-action="Medicines" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color:azure">
+                                <a class="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color:azure">
                                     Actions
                                 </a>
                                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">

@@ -175,7 +175,7 @@ IF @@TRANCOUNT > 0
 
 UPDATE queue WITH (TABLOCKX) SET Serve_status_id = '2' WHERE Patient_id = '{12}' AND Queue_id = '{13}'";
 
-                if (DBUtl.ExecSQL(sql, prescription.Patient_id, prescription.Medicine_id, prescription.Dosage_id, prescription.Doctor_mcr, prescription.Doctor_name, prescription.Practicing_place_name, prescription.Practicing_address, $"{prescription.Booking_appointment:yyyy-MM-dd HH:mm}", prescription.Case_notes, prescription.Duration, prescription.Dosage_quantity, prescription.Instructions, queues.FirstOrDefault().Patient_id, queues.FirstOrDefault().Queue_id) == 1)
+                if (DBUtl.ExecSQL(sql, prescription.Patient_id, prescription.Medicine_id, prescription.Dosage_id, prescription.Doctor_mcr, prescription.Doctor_name, prescription.Practicing_place_name, prescription.Practicing_address, $"{prescription.Booking_appointment:yyyy-MM-dd HH:mm}", prescription.Case_notes, prescription.Duration, prescription.Dosage_quantity, prescription.Instructions, queues.FirstOrDefault().Patient_id, queues.FirstOrDefault().Queue_id) > 0)
                 {
                     TempData["Message"] = "Prescription Added";
                     TempData["MsgType"] = "success";
@@ -304,7 +304,7 @@ UPDATE queue WITH (TABLOCKX) SET Serve_status_id = '2' WHERE Patient_id = '{12}'
             string update = @"UPDATE bill_transaction WITH (TABLOCKX) SET Payment_type = '{0}', Subtotal = '{1}', Payment_datetime = GETDATE() WHERE Prescription_id = '{2}' AND Bill_transaction_id = '{3}' AND Queue_id = '{4}' ;
 
 UPDATE queue WITH (TABLOCKX) SET Serve_status_id = '5' WHERE Queue_id = '{4}' AND Serve_status_id = '4';";
-            if (DBUtl.ExecSQL(update, bill_Transaction.Payment_type, Double.Parse(subtotal), bill_Transaction.Prescription_id, bill_Transaction.Bill_transaction_id, bill_Transaction.Queue_id) == 1)
+            if (DBUtl.ExecSQL(update, bill_Transaction.Payment_type, Double.Parse(subtotal), bill_Transaction.Prescription_id, bill_Transaction.Bill_transaction_id, bill_Transaction.Queue_id) > 0)
             {
                 TempData["Message"] = "Transaction Successful";
                 TempData["MsgType"] = "success";
@@ -528,7 +528,7 @@ UPDATE queue WITH (TABLOCKX) SET Serve_status_id = '5' WHERE Queue_id = '{4}' AN
             string insert = @"INSERT INTO bill_transaction WITH (TABLOCKX) (Prescription_id, Queue_id) VALUES('{0}','{1}');
 
 UPDATE queue WITH (TABLOCKX) SET Serve_status_id = '7' WHERE Queue_id = '{1}' AND Serve_status_id = '3';";
-            if (DBUtl.ExecSQL(insert, prescription, queue) == 1)
+            if (DBUtl.ExecSQL(insert, prescription, queue) > 0)
             {
                 TempData["Message"] = "Packed and ready for dispense!";
                 TempData["MsgType"] = "success";
@@ -658,6 +658,41 @@ UPDATE queue WITH (TABLOCKX) SET Serve_status_id = '7' WHERE Queue_id = '{1}' AN
         public IActionResult QueueCategories()
         {
             return View();
+        }
+
+        [Authorize]
+        public IActionResult CheckWaitingDuration()
+        {
+            return View();
+        }
+
+        [Authorize]
+        [HttpPost]
+        public IActionResult ShowWaitingDuration(Queue queue)
+        {
+            if (!ModelState.IsValid)
+            {
+                ViewData["Message"] = DBUtl.DB_Message;
+                ViewData["MsgType"] = "warning";
+                return View("CheckWaitingDuration");
+            }
+            else
+            {
+                var search = DBUtl.GetTable("SELECT Name, NRIC, Serve_status_description, Waiting_minutes FROM patient, queue, serve_status WHERE queue.Queue_id = patient.Queue_id AND queue.Serve_status_id = serve_status.Serve_status_id AND (Waiting_minutes >= 60 * {0} OR Waiting_minutes <= 60 * {0});", queue.Waiting_minutes);
+
+                if (search.Rows.Count > 0)
+                {
+                    TempData["Message"] = String.Format("{0} search result found", search.Rows.Count);
+                    TempData["MsgType"] = "success";
+                    return View(search);
+                }
+                else
+                {
+                    TempData["Message"] = "Search result not found";
+                    TempData["MsgType"] = "danger";
+                    return View("CheckWaitingDuration");
+                }
+            }
         }
     }
 }

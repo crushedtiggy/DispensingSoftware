@@ -12,5 +12,6 @@ namespace WebApplication.Models
         public int Serve_status_id { get; set; }
         public int Queue_category_id { get; set; }
         public DateTime Queue_datetime { get; set; }
+        public int Waiting_minutes { get; set; }
     }
 }
