@@ -5,6 +5,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Options\**" />
+    <Compile Remove="Rotativa.AspNetCore\**" />
+    <Content Remove="Options\**" />
+    <Content Remove="Rotativa.AspNetCore\**" />
+    <EmbeddedResource Remove="Options\**" />
+    <EmbeddedResource Remove="Rotativa.AspNetCore\**" />
+    <None Remove="Options\**" />
+    <None Remove="Rotativa.AspNetCore\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Remove="Views\Hospital\AddLog.cshtml" />
     <Content Remove="Views\Hospital\EditLog.cshtml" />
     <Content Remove="Views\Hospital\Logs.cshtml" />
@@ -12,8 +23,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="Rotativa.csproj" />
     <None Include="Views\Hospital\Index.cshtml" />
-    <None Include="Views\Test\index.cshtml" />
     <None Include="wwwroot\.editorconfig" />
     <None Include="wwwroot\grunts\grunt-build.js" />
     <None Include="wwwroot\js\bootstrap.bundle.js" />
@@ -307,8 +318,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="BarcodeLib" Version="2.2.2" />
     <PackageReference Include="itext7" Version="7.1.6" />
+    <PackageReference Include="itext7.pdfhtml" Version="2.1.3" />
+    <PackageReference Include="itextsharp.xmlworker" Version="5.5.13" />
     <PackageReference Include="Microsoft.AspNetCore" Version="2.1.6" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.1.3" />
     <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.1.1" />
@@ -317,6 +329,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="ZXing.Net" Version="0.16.4" />
   </ItemGroup>
 
 </Project>

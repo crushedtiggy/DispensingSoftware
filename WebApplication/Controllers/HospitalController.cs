@@ -10,6 +10,12 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using WebApplication.Models;
+using iTextSharp.text;
+using iTextSharp.text.pdf;
+using iTextSharp.tool.xml;
+using iTextSharp.text.html.simpleparser;
+using System.IO;
+using System.Text;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -306,9 +312,23 @@ UPDATE queue WITH (TABLOCKX) SET Serve_status_id = '2' WHERE Patient_id = '{12}'
 UPDATE queue WITH (TABLOCKX) SET Serve_status_id = '5' WHERE Queue_id = '{4}' AND Serve_status_id = '4';";
             if (DBUtl.ExecSQL(update, bill_Transaction.Payment_type, Double.Parse(subtotal), bill_Transaction.Prescription_id, bill_Transaction.Bill_transaction_id, bill_Transaction.Queue_id) > 0)
             {
-                TempData["Message"] = "Transaction Successful";
+                var select = DBUtl.GetTable("SELECT TOP 1 Bill_transaction_id, bill_transaction.Prescription_id, bill_transaction.Queue_id, patient.Name, patient.Nric, Medicine_name, Dosage_quantity, Price, Dosage_quantity * Price AS Subtotal, payment_type.Payment_type_description FROM bill_transaction, medicine, prescription, patient, queue, payment_type WHERE queue.Serve_status_id = '5' AND queue.Patient_id = patient.Patient_id AND prescription.Patient_id = queue.Patient_id AND prescription.Medicine_id = medicine.Medicine_id AND bill_transaction.Prescription_id = prescription.Prescription_id AND bill_transaction.Payment_type = payment_type.Payment_type AND Bill_transaction_id = '{0}'; ", bill_Transaction.Bill_transaction_id);
+
+                ViewData["Transaction"] = (int)select.Rows[0]["Bill_transaction_id"];
+                ViewData["Prescription"] = (int)select.Rows[0]["Prescription_id"];
+                ViewData["Queue"] = (int)select.Rows[0]["Queue_id"];
+                ViewData["Date"] = DateTime.Now.ToString();
+                ViewData["Name"] = select.Rows[0]["Name"].ToString();
+                ViewData["NRIC"] = select.Rows[0]["Nric"].ToString();
+                ViewData["Medicine"] = select.Rows[0]["Medicine_name"].ToString();
+                ViewData["Qty"] = (int)select.Rows[0]["Dosage_quantity"];
+                ViewData["UnitPrice"] = Convert.ToDouble(select.Rows[0]["Price"]);
+                ViewData["Subtotal"] = Convert.ToDouble(select.Rows[0]["Subtotal"]);
+                ViewData["Types"] = select.Rows[0]["Payment_type_description"].ToString();
+
+                TempData["Message"] = "Transaction successful";
                 TempData["MsgType"] = "success";
-                return RedirectToAction("Index");
+                return View("TransactionBill", select.Rows[0]["Bill_transaction_id"]);
             }
             else
             {
@@ -692,6 +712,102 @@ UPDATE queue WITH (TABLOCKX) SET Serve_status_id = '7' WHERE Queue_id = '{1}' AN
                     TempData["MsgType"] = "danger";
                     return View("CheckWaitingDuration");
                 }
+            }
+        }
+
+        [Authorize]
+        public IActionResult Transactions()
+        {
+            var transactions = DBUtl.GetTable("SELECT Bill_transaction_id, bill_transaction.Prescription_id, bill_transaction.Queue_id, patient.Name, patient.Nric, Medicine_name, Dosage_quantity, Price, Dosage_quantity * Price AS Subtotal, payment_type.Payment_type_description FROM bill_transaction, medicine, prescription, patient, queue, payment_type WHERE queue.Serve_status_id = '5' AND queue.Patient_id = patient.Patient_id AND prescription.Patient_id = queue.Patient_id AND prescription.Medicine_id = medicine.Medicine_id AND bill_transaction.Prescription_id = prescription.Prescription_id AND bill_transaction.Payment_type = payment_type.Payment_type;");
+            return View(transactions);
+        }
+
+        [Authorize]
+        [Obsolete]
+        // To download receipt as PDF for user to print out
+        public FileResult Export(int id)
+        {
+            var transactions = DBUtl.GetTable("SELECT Bill_transaction_id, bill_transaction.Prescription_id, bill_transaction.Queue_id, patient.Name, patient.Nric, Medicine_name, Dosage_quantity, Price, Dosage_quantity * Price AS Subtotal, payment_type.Payment_type_description, bill_transaction.payment_datetime FROM bill_transaction, medicine, prescription, patient, queue, payment_type WHERE queue.Serve_status_id = '5' AND queue.Patient_id = patient.Patient_id AND prescription.Patient_id = queue.Patient_id AND prescription.Medicine_id = medicine.Medicine_id AND bill_transaction.Prescription_id = prescription.Prescription_id AND bill_transaction.Payment_type = payment_type.Payment_type AND Bill_transaction_id = '{0}';", id);
+
+            StringBuilder sb = new StringBuilder();
+            sb.Append("<header class='clearfix'>");
+            sb.Append("<h1>RECEIPT</h1>");
+            sb.Append("<div id='company' class='clearfix'>");
+            sb.Append("<div>Republic Polytechnic One-Stop Dispensing Software</div>");
+            sb.Append("<div>9 Woodlands Ave 9,<br /> Singapore 738964</div>");
+            sb.Append("</div><br><br>");
+            sb.Append("<div id='project'>");
+            sb.Append(String.Format("<div><span>TRANSACTION ID: </span> {0}</div>", transactions.Rows[0]["Bill_transaction_id"]));
+            sb.Append(String.Format("<div><span>PATIENT NAME: </span> {0}, {1}</div>", transactions.Rows[0]["Name"], transactions.Rows[0]["Nric"]));
+            sb.Append(String.Format("<div><span>QUEUE NO: </span> {0}</div>", transactions.Rows[0]["Queue_id"]));
+            sb.Append(String.Format("<div><span>DATE AND TIME OF TRANSACTION: </span> {0}</div>", transactions.Rows[0]["Payment_datetime"]));
+            sb.Append("</div><br><br>");
+            sb.Append("</header>");
+            sb.Append("<main>");
+            sb.Append("<table>");
+            sb.Append("<thead>");
+            sb.Append("<tr>");
+            sb.Append("<th>MEDICINE</th>");
+            sb.Append("<th>QUANTITY</th>");
+            sb.Append("<th>UNIT PRICE</th>");
+            sb.Append("<th>SUBTOTAL</th>");
+            sb.Append("<th>PAYMENT MODE</th>");
+            sb.Append("</tr>");
+            sb.Append("</thead>");
+            sb.Append("<tbody>");
+            sb.Append("<tr>");
+            sb.Append(String.Format("<td>{0}</td>", transactions.Rows[0]["Medicine_name"]));
+            sb.Append(String.Format("<td>{0}</td>", transactions.Rows[0]["Dosage_quantity"]));
+            sb.Append(String.Format("<td>{0}</td>", transactions.Rows[0]["Price"]));
+            sb.Append(String.Format("<td>{0}</td>", transactions.Rows[0]["Subtotal"]));
+            sb.Append(String.Format("<td>{0}</td>", transactions.Rows[0]["Payment_type_description"].ToString().Substring(0, 1).ToUpper() + transactions.Rows[0]["Payment_type_description"].ToString().Substring(1)));
+            sb.Append("</tr>");
+            sb.Append("</tbody>");
+            sb.Append("</table>");
+            sb.Append("</main><br><br>");
+            sb.Append("<footer>");
+            sb.Append("Invoice was created on a computer and is valid without the signature and seal.");
+            sb.Append("</footer>");
+
+            StringReader sr = new StringReader(sb.ToString());
+            Document PdfFile = new Document(PageSize.A4);
+            HTMLWorker htmlparser = new HTMLWorker(PdfFile);
+            using (MemoryStream memoryStream = new MemoryStream())
+            {
+                PdfWriter writer = PdfWriter.GetInstance(PdfFile, memoryStream);
+                PdfFile.Open();
+                htmlparser.Parse(sr);
+                PdfFile.Close();
+                return File(memoryStream.ToArray(), "application/pdf", "Transaction.pdf");
+            }
+        }
+
+        [Authorize]
+        // To show the transaction (successful) before exporting for print
+        public IActionResult TransactionBill(Bill_transaction id)
+        {
+            var select = DBUtl.GetTable("SELECT TOP 1 Bill_transaction_id, bill_transaction.Prescription_id, bill_transaction.Queue_id, patient.Name, patient.Nric, Medicine_name, Dosage_quantity, Price, Dosage_quantity * Price AS Subtotal, payment_type.Payment_type_description FROM bill_transaction, medicine, prescription, patient, queue, payment_type WHERE queue.Serve_status_id = '5' AND queue.Patient_id = patient.Patient_id AND prescription.Patient_id = queue.Patient_id AND prescription.Medicine_id = medicine.Medicine_id AND bill_transaction.Prescription_id = prescription.Prescription_id AND bill_transaction.Payment_type = payment_type.Payment_type AND Bill_transaction_id = '{0}';", id);
+
+            if (select.Rows.Count == 1)
+            {
+                ViewData["Transaction"] = (int)select.Rows[0]["Bill_transaction_id"];
+                ViewData["Prescription"] = (int)select.Rows[0]["Prescription_id"];
+                ViewData["Queue"] = (int)select.Rows[0]["Queue_id"];
+                ViewData["Date"] = DateTime.Now.ToString();
+                ViewData["Name"] = select.Rows[0]["Name"].ToString();
+                ViewData["NRIC"] = select.Rows[0]["Nric"].ToString();
+                ViewData["Medicine"] = select.Rows[0]["Medicine_name"].ToString();
+                ViewData["Qty"] = (int)select.Rows[0]["Dosage_quantity"];
+                ViewData["UnitPrice"] = Convert.ToDouble(select.Rows[0]["Price"]);
+                ViewData["Subtotal"] = Convert.ToDouble(select.Rows[0]["Subtotal"]);
+                ViewData["Types"] = select.Rows[0]["Payment_type_description"].ToString();
+                return View();
+            }
+            else
+            {
+                TempData["Message"] = "No transaction available to show";
+                TempData["MsgType"] = "warning";
+                return RedirectToAction("Index");
             }
         }
     }

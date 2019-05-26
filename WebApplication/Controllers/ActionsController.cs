@@ -32,7 +32,7 @@ INSERT INTO patient_archive
                             DELETE FROM category3;
                             DELETE FROM category4;
                             DELETE FROM patientcheck;";
-            if (DBUtl.ExecSQL(sql) == 1)
+            if (DBUtl.ExecSQL(sql) > 0)
             {
                 TempData["Message"] = "Reset Main Queue Successful";
                 TempData["MsgType"] = "success";
@@ -86,7 +86,7 @@ INSERT INTO patient_archive
                             DELETE FROM category4;
                             DELETE FROM checkflag;
 							";
-            if (DBUtl.ExecSQL(sql) == 1)
+            if (DBUtl.ExecSQL(sql) > 0)
             {
                 TempData["Message"] = "Reset All Successful";
                 TempData["MsgType"] = "success";

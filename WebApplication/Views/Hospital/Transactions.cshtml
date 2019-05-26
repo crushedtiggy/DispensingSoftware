@@ -1,0 +1,47 @@
+﻿@model DataTable
+<script src="~/lib/bootstrap/js/bootstrap.js"></script>
+<script src="~/lib/bootstrap/js/bootstrap.min.js"></script>
+
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-@TempData[" MsgType"]">
+        @TempData["Message"]
+    </div>
+}
+
+    <h2>Transactions</h2>
+    <table class="table table-bordered table-condensed table-hover table-striped">
+        <thead>
+            <tr>
+                <th scope="col" width="20%">Bill Transaction ID</th>
+                <th scope="col" width="20%">Prescription ID</th>
+                <th scope="col" width="20%">Queue No.</th>
+                <th scope="col" width="20%">Name</th>
+                <th scope="col" width="20%">NRIC</th>
+                <th scope="col" width="20%">Medicine Name</th>
+                <th scope="col" width="20%">Dosage Quantity</th>
+                <th scope="col" width="20%">Unit Price</th>
+                <th scope="col" width="20%">Subtotal</th>
+                <th scope="col" width="20%">Payment Type</th>
+                <th scope="col" width="20%">Actions</th>
+            </tr>
+        </thead>
+        @for (int row = 0; row < Model.Rows.Count; row++)
+        {
+            <tbody>
+                <tr scope="row">
+                    <td width="20%">@Model.Rows[row]["Bill_transaction_id"]</td>
+                    <td width="20%">@Model.Rows[row]["Prescription_id"]</td>
+                    <td width="20%">@Model.Rows[row]["Queue_id"]</td>
+                    <td width="20%">@Model.Rows[row]["Name"]</td>
+                    <td width="20%">@Model.Rows[row]["Nric"]</td>
+                    <td width="20%">@Model.Rows[row]["Medicine_name"]</td>
+                    <td width="20%">@Model.Rows[row]["Dosage_quantity"]</td>
+                    <td width="20%">@Model.Rows[row]["Price"]</td>
+                    <td width="20%">@Model.Rows[row]["Subtotal"]</td>
+                    <td width="20%">@Model.Rows[row]["Payment_type_description"].ToString().Substring(0, 1).ToUpper()@Model.Rows[row]["Payment_type_description"].ToString().Substring(1)</td>
+                    <td width="20%">@Html.ActionLink("Print", "Export", new { id = Model.Rows[row]["Bill_transaction_id"]})</td>
+                </tr>
+            </tbody>
+        }
+    </table>
