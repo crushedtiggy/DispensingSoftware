@@ -326,8 +326,6 @@ UPDATE queue WITH (TABLOCKX) SET Serve_status_id = '5' WHERE Queue_id = '{4}' AN
                 ViewData["Subtotal"] = Convert.ToDouble(select.Rows[0]["Subtotal"]);
                 ViewData["Types"] = select.Rows[0]["Payment_type_description"].ToString();
 
-                TempData["Message"] = "Transaction successful";
-                TempData["MsgType"] = "success";
                 return View("TransactionBill", select.Rows[0]["Bill_transaction_id"]);
             }
             else
