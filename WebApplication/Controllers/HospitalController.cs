@@ -768,7 +768,7 @@ UPDATE queue WITH (TABLOCKX) SET Serve_status_id = '7' WHERE Queue_id = '{1}' AN
             sb.Append("</footer>");
 
             StringReader sr = new StringReader(sb.ToString());
-            Document PdfFile = new Document(PageSize.A4);
+            Document PdfFile = new Document(PageSize.A5);
             HTMLWorker htmlparser = new HTMLWorker(PdfFile);
             using (MemoryStream memoryStream = new MemoryStream())
             {
