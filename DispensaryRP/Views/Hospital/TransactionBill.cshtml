@@ -1,0 +1,101 @@
+﻿<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<script type="text/javascript">
+    $(function () {
+        $("#btnSubmit").click(function () {
+            $("input[name='ExportData']").val($("#PrintPDF").html());
+        });
+    });
+</script>
+
+<div id="PrintPDF">
+    <div class="form-group row">
+        <div class="offset-sm-0 col-sm-6 ">
+            <h2>Bill Transaction</h2>
+        </div>
+    </div>
+
+    <div class="form-group row row">
+        <label class="control-label col-sm-3">Transaction ID : </label>
+        <div class="col-sm-4">
+            <p>@ViewData["Transaction"]</p>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label class="control-label col-sm-3">Prescription ID : </label>
+        <div class="col-sm-5">
+            <p>@ViewData["Prescription"]</p>
+        </div>
+    </div>
+
+
+    <div class="form-group row row">
+        <label class="control-label col-sm-3">Queue ID : </label>
+        <div class="col-sm-4">
+            <p>@ViewData["Queue"]</p>
+        </div>
+    </div>
+
+    <div class="form-group row row">
+        <label class="control-label col-sm-3">Date and Time of Transaction : </label>
+        <div class="col-sm-4">
+            <p>@ViewData["Date"]</p>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label class="control-label col-sm-3">Patient Name : </label>
+        <div class="col-sm-5">
+            <p>@ViewData["Name"]</p>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label class="control-label col-sm-3">NRIC : </label>
+        <div class="col-sm-5">
+            <p>@ViewData["NRIC"]</p>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label class="control-label col-sm-3">Name of Medicine : </label>
+        <div class="col-sm-5">
+            <p>@ViewData["Medicine"]</p>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label class="control-label col-sm-3">Quantity : </label>
+        <div class="col-sm-5">
+            <p>@ViewData["Qty"]</p>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label class="control-label col-sm-3">Unit Price : </label>
+        <div class="col-sm-5">
+            <p>@ViewData["UnitPrice"]</p>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label class="control-label col-sm-3">Subtotal : </label>
+        <div class="col-sm-5">
+            <p>@ViewData["Subtotal"]</p>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label class="control-label col-sm-3" >Payment Method : </label>
+        <div class="col-sm-5">
+            <p>@ViewData["Types"]</p>
+        </div>
+    </div>
+</div>
+
+<div class="form-group row">
+    <div class="offset-sm-3 col-sm-6">
+        <a class="btn btn-primary" href="/Hospital/Export/@ViewData["Transaction"]" role="button">Export</a>
+    </div>
+</div>
+

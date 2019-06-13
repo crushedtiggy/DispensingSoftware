@@ -1,0 +1,313 @@
+﻿@model Patient;
+
+@{
+    var AlcoholArray = new[]
+    {
+new { value="Yes", text="Yes"},
+new { value="No", text="No"},
+};
+
+    var SmokeArray = new[]
+{
+new { value="Yes", text="Yes"},
+new { value="No", text="No"},
+};
+
+    var HasTravel = new[]
+{
+new { value="Yes", text="Yes"},
+new { value="No", text="No"},
+};
+
+    var HasFlu = new[]
+{
+new { value="Yes", text="Yes"},
+new { value="No", text="No"},
+};
+
+    var HasSymptoms = new[]
+{
+new { value="Yes", text="Yes"},
+new { value="No", text="No"},
+};
+
+    var Race = new[]
+{
+new { value="Chinese", text="Chinese"},
+new { value="Malay", text="Malay"},
+new { value="Indian", text="Indian"},
+new { value="Others", text="Others"},
+};
+
+    var Genders = new[]
+{
+new { value="Male", text="Male"},
+new { value="Female", text="Female"},
+};
+
+    //int? queueNumber = ViewData["QueueNumber"] as int?;
+}
+
+<form asp-controller="Hospital"
+      asp-action="AddPatient"
+      method="post">
+
+    <div class="form-group row">
+        <div class="offset-sm-0 col-sm-6 ">
+            <h2>Add Patient</h2>
+        </div>
+    </div>
+
+    <div class="form-group row row">
+        <label class="control-label col-sm-3" asp-for="Nric">NRIC : </label>
+        <div class="col-sm-4">
+            <input asp-for="Nric" class="form-control" />
+        </div>
+        <div class="col-sm-4">
+            <span asp-validation-for="Nric" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="form-group row row">
+        <label class="control-label col-sm-3" asp-for="Name">Name : </label>
+        <div class="col-sm-4">
+            <input asp-for="Name" class="form-control" />
+        </div>
+        <div class="col-sm-4">
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="form-group row row">
+        <label class="control-label col-sm-3" asp-for="Gender">Gender : </label>
+        <div class="col-sm-4">
+            @foreach (var item in Genders)
+            {
+                <input type="radio" asp-for="Gender" value="@item.value" /> @item.text
+            }
+        </div>
+        <div class="col-sm-4">
+            <span asp-validation-for="Gender" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label class="control-label col-sm-3" asp-for="Date_of_birth">Date of Birth :</label>
+        <div class="col-sm-4">
+            <input asp-for="Date_of_birth" class="form-control" placeholder="YYYY-MM-DD" />
+
+        </div>
+        <div class="col-sm-4">
+            <span asp-validation-for="Date_of_birth" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="form-group row row">
+        <label class="control-label col-sm-3" asp-for="Race">Race : </label>
+        <div class="col-sm-4">
+            @foreach (var item in Race)
+            {
+                <input type="radio" asp-for="Race" value="@item.value" /> @item.text
+            }
+        </div>
+        <div class="col-sm-3">
+            <span asp-validation-for="Race" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="form-group row row">
+        <label class="control-label col-sm-3" asp-for="Height">Height : </label>
+        <div class="col-sm-4">
+            <input asp-for="Height" class="form-control" />
+        </div>
+        <div class="col-sm-3">
+            <span asp-validation-for="Height" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="form-group row row">
+        <label class="control-label col-sm-3" asp-for="Weight">Weight : </label>
+        <div class="col-sm-4">
+            <input asp-for="Weight" class="form-control" />
+        </div>
+        <div class="col-sm-3">
+            <span asp-validation-for="Weight" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="form-group row row">
+        <label class="control-label col-sm-3" asp-for="Allergy">Allergy : </label>
+        <div class="col-sm-5">
+            <input asp-for="Allergy" class="form-control" />
+        </div>
+        <div class="col-sm-3">
+            <span asp-validation-for="Allergy" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="form-group row row">
+        <label class="control-label col-sm-3" asp-for="Smoke">Do you smoke? : </label>
+        <div class="col-sm-5">
+            @foreach (var item in SmokeArray)
+            {
+                <input type="radio" asp-for="Smoke" value="@item.value" /> @item.text
+            }
+
+        </div>
+        <div class="col-sm-3">
+            <span asp-validation-for="Smoke" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="form-group row row">
+        <label class="control-label col-sm-3" asp-for="Alcohol">Do you drink? : </label>
+        <div class="col-sm-5">
+            @foreach (var item in AlcoholArray)
+            {
+                <input type="radio" asp-for="Alcohol" value="@item.value" /> @item.text
+            }
+
+        </div>
+        <div class="col-sm-3">
+            <span asp-validation-for="Alcohol" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="form-group row row">
+        <label class="control-label col-sm-3" asp-for="Has_travel">Travelled out of Singapore for the past 7 days? : </label>
+        <div class="col-sm-5">
+            @foreach (var item in HasTravel)
+            {
+                <input type="radio" asp-for="Has_travel" value="@item.value" /> @item.text
+            }
+
+        </div>
+        <div class="col-sm-3">
+            <span asp-validation-for="Has_travel" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="form-group row row">
+        <label class="control-label col-sm-3" asp-for="Has_flu">Has a flu for the past 7 days? : </label>
+        <div class="col-sm-5">
+            @foreach (var item in HasFlu)
+            {
+                <input type="radio" asp-for="Has_flu" value="@item.value" /> @item.text
+            }
+
+        </div>
+        <div class="col-sm-3">
+            <span asp-validation-for="Has_flu" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="form-group row row">
+        <label class="control-label col-sm-3" asp-for="Has_following_symptoms">Has the following symptoms? (dizziness, watery eyes, vomitting, etc.) : </label>
+        <div class="col-sm-5">
+            @foreach (var item in HasSymptoms)
+            {
+                <input type="radio" asp-for="Has_following_symptoms" value="@item.value" /> @item.text
+            }
+
+        </div>
+        <div class="col-sm-3">
+            <span asp-validation-for="Has_following_symptoms" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="form-group row row">
+        <label class="control-label col-sm-3" asp-for="Address">Address : </label>
+        <div class="col-sm-5">
+            <input asp-for="Address" class="form-control" />
+        </div>
+        <div class="col-sm-3">
+            <span asp-validation-for="Address" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="form-group row row">
+        <label class="control-label col-sm-3" asp-for="Postal_code">Postal : </label>
+        <div class="col-sm-4">
+            <input asp-for="Postal_code" class="form-control" />
+        </div>
+        <div class="col-sm-3">
+            <span asp-validation-for="Postal_code" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="form-group row row">
+        <label class="control-label col-sm-3" asp-for="Phone_no">Mobile : </label>
+        <div class="col-sm-4">
+            <input asp-for="Phone_no" class="form-control" />
+        </div>
+        <div class="col-sm-3">
+            <span asp-validation-for="Phone_no" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="form-group row row">
+        <label class="control-label col-sm-3" asp-for="Email">Email : </label>
+        <div class="col-sm-4">
+            <input asp-for="Email" class="form-control" />
+        </div>
+        <div class="col-sm-3">
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="form-group row row">
+        <label class="control-label col-sm-3" asp-for="Remarks">Remarks : </label>
+        <div class="col-sm-5">
+            <input asp-for="Remarks" class="form-control" />
+        </div>
+        <div class="col-sm-3">
+            <span asp-validation-for="Remarks" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="form-group row row">
+        <label class="control-label col-sm-3" asp-for="Is_Urgent">Is patient in need of an immediate assistance? : </label>
+        <div class="col-sm-5">
+            <label asp-for="Is_Urgent" class="checkbox-inline">
+                <input type="checkbox" asp-for="Is_Urgent" /> Yes
+            </label>
+
+        </div>
+        <div class="col-sm-3">
+            <span asp-validation-for="Remarks" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="offset-sm-3 col-sm-6">
+            <input type="submit" value="Submit" class="btn btn-primary" />
+        </div>
+    </div>
+
+    @if (ViewData["Message"] != null)
+    {
+        <div class="form-group row">
+            <div class="offset-sm-3 col-sm-6">
+                <div class="alert alert-@ViewData["MsgType"]">
+                    <text>@Html.Raw(ViewData["Message"])</text>
+                </div>
+            </div>
+        </div>
+    }
+
+    @*<div class="form-group row" style="display: @(queueNumber == null? "none" : "block")">
+        <div class="offset-sm-3 col-sm-6">
+            <center>
+                <div class="card" style="width:350px; height:205px">
+                    <div class="card-body">
+                        <h5 class="card-title text-left">Your Queue Number is:</h5>
+                        <h1 class="card-title">
+                            @queueNumber
+                        </h1>
+                        <p class="card-text text-left">*Queue no. may not be called in running sequence.</p>
+                    </div>
+                </div>
+            </center>
+        </div>
+    </div>*@
+</form>
+

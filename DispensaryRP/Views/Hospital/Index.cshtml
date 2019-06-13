@@ -1,0 +1,43 @@
+﻿
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2><span style="color:white; visibility:hidden">Test</span></h2>
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-@TempData["MsgType"]">
+        @TempData["Message"]
+    </div>
+}
+<table class="table table-borderless">
+    <tr scope="row">
+        <td width="20%"><a href="/Hospital/AddPatient"><img src="~/images/register.png" /></a></td>
+        <td width="20%"><a href="/Hospital/GetQueueNumber"><img src="~/images/presystem.png" /></a></td>
+        <td width="20%"><a href="/Hospital/GetPrescription"><img src="~/images/packstatus.png" /></a></td>
+    </tr>
+    <tr scope="row">
+        <td width="20%" align="center" style="font-size:larger">Patient</td>
+        <td width="20%" align="center" style="font-size:larger">Prescription System</td>
+        <td width="20%" align="center" style="font-size:larger">Pack Status</td>
+    </tr>
+
+    <tr scope="row">
+        <td width="20%"><a href="/Hospital/GetPack"><img src="~/images/dispense.png" /></a></td>
+        <td width="20%"><a href="/Hospital/GetPayment"><img src="~/images/payment.png" /></a></td>
+        <td width="20%"><a href="/Hospital/Medicines"><img src="~/images/inventory.png" /></a></td>
+    </tr>
+    <tr scope="row">
+        <td width="20%" align="center" style="font-size:larger">Dispenser System</td>
+        <td width="20%" align="center" style="font-size:larger">Cashier Payment</td>
+        <td width="20%" align="center" style="font-size:larger">Inventory System</td>
+    </tr>
+
+    <tr scope="row">
+        <td width="20%"><a href="/Hospital/Patients"><img src="~/images/patient.png" /></a></td>
+    </tr>
+    <tr scope="row">
+        <td width="20%" align="center" style="font-size:larger">Patient</td>
+    </tr>
+</table>

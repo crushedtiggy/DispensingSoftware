@@ -1,0 +1,26 @@
+﻿@{
+    int patient = (int)ViewData["QueueNumber"];
+}
+
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-@TempData["MsgType"]">
+        @TempData["Message"]
+    </div>
+}
+<body>
+    <h2><span style="color:white; visibility:hidden">Test</span></h2>
+    <div class="container">
+        <center>
+            <div class="card" style="width:350px; height:205px">
+                <div class="card-body">
+                    <h5 class="card-title text-left">Your Queue Number is:</h5>
+                    <h1 class="card-title">
+                        @patient
+                    </h1>
+                    <p class="card-text text-left">*Queue no. may not be called in running sequence.</p>
+                </div>
+            </div>
+        </center>
+    </div>
+</body>

@@ -1,0 +1,47 @@
+﻿@{
+    string name = ViewData["Name"].ToString();
+    string nric = ViewData["NRIC"].ToString();
+    string status = ViewData["Status"].ToString();
+}
+
+<div class="form-group row">
+    <div class="offset-sm-0 col-sm-6 ">
+        <h2>Check Dispensary Status</h2>
+    </div>
+</div>
+
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-@TempData["MsgType"]">
+        @TempData["Message"]
+    </div>
+}
+
+<form class="form-control-plaintext">
+    <div class="form-group row">
+        <label class="control-label col-sm-3">Patient Name : </label>
+        <div class="col-sm-4">
+            <input class="form-control" value="@name" readonly />
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label class="control-label col-sm-3">NRIC : </label>
+        <div class="col-sm-4">
+            <input class="form-control" value="@nric" readonly />
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label class="control-label col-sm-3">Dispense Status : </label>
+        <div class="col-sm-4">
+            <input class="form-control" value="@status" readonly />
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="offset-sm-3 col-sm-6">
+            <a class="btn btn-primary" href="/Hospital/CheckDispensaryStatus" role="button">Check Another Dispense Status</a>
+        </div>
+    </div>
+</form>

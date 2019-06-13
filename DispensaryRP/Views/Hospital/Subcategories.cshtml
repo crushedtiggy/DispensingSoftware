@@ -1,0 +1,34 @@
+﻿@model List<Subcategory>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Medicines</h2>
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-@TempData["MsgType"]">
+        @TempData["Message"]
+    </div>
+}
+
+<span style="color:red">@TempData["Msg"]</span>
+<table class="table table-bordered table-condensed table-hover table-striped">
+    <thead>
+        <tr>
+            <th scope="col" width="20%">Category ID</th>
+            <th scope="col" width="20%">Subcategory ID</th>
+            <th scope="col" width="20%">Subcategory Name</th>
+        </tr>
+    </thead>
+    @foreach (Subcategory b in Model)
+    {
+        <tbody>
+            <tr scope="row">
+                <td width="20%">@b.Category_type</td>
+                <td width="20%">@b.Subcategory_type</td>
+                <td width="20%">@b.Subcategory_name</td>
+            </tr>
+        </tbody>
+    }
+</table>

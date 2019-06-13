@@ -1,0 +1,124 @@
+﻿@model Bill_transaction
+
+<form asp-controller="Hospital"
+      asp-action="DoPayment"
+      method="post">
+
+    <div class="form-group row">
+        <div class="offset-sm-0 col-sm-6 ">
+            <h2>Do Payment</h2>
+        </div>
+    </div>
+
+    <div class="form-group row row">
+        <label class="control-label col-sm-3" asp-for="Bill_transaction_id" hidden>Transaction ID : </label>
+        <div class="col-sm-4">
+            <input asp-for="Bill_transaction_id" class="form-control" value="@ViewData["Transaction"]" hidden/>
+        </div>
+        <div class="col-sm-4">
+            <span asp-validation-for="Bill_transaction_id" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label class="control-label col-sm-3" asp-for="Prescription_id">Prescription ID : </label>
+        <div class="col-sm-5">
+            <input class="form-control" asp-for="Prescription_id" value="@ViewData["Prescription"]" readonly />
+        </div>
+        <div class="col-sm-4">
+            <span asp-validation-for="Prescription_id" class="text-danger"></span>
+        </div>
+    </div>
+
+
+    <div class="form-group row row">
+        <label class="control-label col-sm-3" asp-for="Queue_id" hidden>Queue ID : </label>
+        <div class="col-sm-4">
+            <input asp-for="Queue_id" class="form-control" value="@ViewData["Queue"]" hidden />
+        </div>
+        <div class="col-sm-4">
+            <span asp-validation-for="Queue_id" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="form-group row row">
+        <label class="control-label col-sm-3" asp-for="Payment_datetime">Date and Time of Transaction : </label>
+        <div class="col-sm-4">
+            @ViewData["Date"]
+        </div>
+        <div class="col-sm-4">
+            <span asp-validation-for="Payment_datetime" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label class="control-label col-sm-3">Patient Name : </label>
+        <div class="col-sm-5">
+            @ViewData["Name"]
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label class="control-label col-sm-3">NRIC : </label>
+        <div class="col-sm-5">
+            @ViewData["NRIC"]
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label class="control-label col-sm-3">Name of Medicine : </label>
+        <div class="col-sm-5">
+            @ViewData["Medicine"]
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label class="control-label col-sm-3">Quantity : </label>
+        <div class="col-sm-5">
+            @ViewData["Qty"]
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label class="control-label col-sm-3">Unit Price : </label>
+        <div class="col-sm-5">
+            @ViewData["UnitPrice"]
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label class="control-label col-sm-3">Subtotal : </label>
+        <div class="col-sm-5">
+            <input type="text" name="subtotal" class="form-control" value="@ViewData["Subtotal"]" readonly />
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label class="control-label col-sm-3" asp-for="Payment_type">Payment Methods : </label>
+        <div class="col-sm-6">
+            <select class="form-control col-8" asp-for="Payment_type"
+                    asp-items="@((SelectList)ViewData["Types"])">
+                <option value="0" selected="selected">-- SELECT --</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="offset-sm-3 col-sm-6">
+            <input type="submit" value="Submit" class="btn btn-primary" />
+        </div>
+    </div>
+
+    @if (ViewData["Message"] != null)
+    {
+        <div class="form-group row">
+            <div class="offset-sm-3 col-sm-6">
+                <div class="alert alert-@ViewData["MsgType"]">
+                    <text>@Html.Raw(ViewData["Message"])</text>
+                </div>
+            </div>
+        </div>
+    }
+
+</form>
+
